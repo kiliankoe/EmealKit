@@ -35,6 +35,9 @@
 		395686D91F1ABBA800F173C2 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686D71F1ABBA800F173C2 /* Network.swift */; };
 		395686DA1F1ABBA800F173C2 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686D71F1ABBA800F173C2 /* Network.swift */; };
 		395686DB1F1ABBA800F173C2 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686D71F1ABBA800F173C2 /* Network.swift */; };
+		395A655C1F1AC4C000F9712D /* CardserviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395A655B1F1AC4C000F9712D /* CardserviceTests.swift */; };
+		395A655D1F1AC4C000F9712D /* CardserviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395A655B1F1AC4C000F9712D /* CardserviceTests.swift */; };
+		395A655E1F1AC4C000F9712D /* CardserviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395A655B1F1AC4C000F9712D /* CardserviceTests.swift */; };
 		52D6D9871BEFF229002C0205 /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* StuWeDD.framework */; };
 		8933C7851EB5B820000D00A4 /* StuWeDD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* StuWeDD.swift */; };
 		8933C7861EB5B820000D00A4 /* StuWeDD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* StuWeDD.swift */; };
@@ -79,6 +82,7 @@
 		395686CD1F1ABB5A00F173C2 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		395686D21F1ABB6A00F173C2 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		395686D71F1ABBA800F173C2 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		395A655B1F1AC4C000F9712D /* CardserviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardserviceTests.swift; sourceTree = "<group>"; };
 		52D6D97C1BEFF229002C0205 /* StuWeDD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StuWeDD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9861BEFF229002C0205 /* StuWeDD-iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StuWeDD-iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9E21BEFFF6E002C0205 /* StuWeDD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StuWeDD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -208,6 +212,7 @@
 			isa = PBXGroup;
 			children = (
 				8933C7891EB5B82A000D00A4 /* StuWeDDTests.swift */,
+				395A655B1F1AC4C000F9712D /* CardserviceTests.swift */,
 			);
 			name = Tests;
 			path = Tests/StuWeDDTests;
@@ -525,6 +530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8933C7901EB5B82D000D00A4 /* StuWeDDTests.swift in Sources */,
+				395A655C1F1AC4C000F9712D /* CardserviceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,6 +584,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8933C78F1EB5B82C000D00A4 /* StuWeDDTests.swift in Sources */,
+				395A655D1F1AC4C000F9712D /* CardserviceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +593,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8933C78E1EB5B82C000D00A4 /* StuWeDDTests.swift in Sources */,
+				395A655E1F1AC4C000F9712D /* CardserviceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
