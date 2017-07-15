@@ -5,5 +5,6 @@ Swift library for accessing some of the data the [Studentenwerk Dresden](http://
 What's available online:
 
 - [ ] Canteen data (see [OpenMensaKit](https://github.com/kiliankoe/OpenMensaKit) instead)
-- [ ] Kartenservice (in progress)
+- [x] Kartenservice (in progress)
+
 
