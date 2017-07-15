@@ -13,6 +13,13 @@ public struct Cardservice {
     let cardnumber: String
     let authToken: String
 
+    /// Authenticate against the webservice.
+    ///
+    /// - Parameters:
+    ///   - username: Your username, probably your card number
+    ///   - password: Your password
+    ///   - session: URLSession, defaults to .shared
+    ///   - completion: handler
     public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice>) -> Void) {
         let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: .cardserviceLogin)!
         var request = URLRequest(url: url)
@@ -41,6 +48,11 @@ public struct Cardservice {
         }
     }
 
+    /// Fetch card data associated with an account.
+    ///
+    /// - Parameters:
+    ///   - session: URLSession, defaults to .shared
+    ///   - completion: handler
     public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData]>) -> Void) {
         let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: .cardserviceCarddata)!
         let request = URLRequest(url: url)
@@ -56,6 +68,13 @@ public struct Cardservice {
     }
 
 
+    /// Fetch all transactions that occurred in a specific time interval.
+    ///
+    /// - Parameters:
+    ///   - begin: start of time interval
+    ///   - end: end of time interval
+    ///   - session: URLSession, defaults to .shared
+    ///   - completion: handler
     public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction]>) -> Void) {
         let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
         let request = URLRequest(url: url)
