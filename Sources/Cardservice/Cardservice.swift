@@ -54,4 +54,11 @@ public struct Cardservice {
             }
         }
     }
+
+
+    public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction]>) -> Void) {
+        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
+        let request = URLRequest(url: url)
+        Network.dataTask(request: request, session: session, completion: completion)
+    }
 }
