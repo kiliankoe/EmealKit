@@ -15,6 +15,7 @@ public struct Cardservice {
     public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice>) -> Void) {
         let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: .cardserviceLogin)!
         var request = URLRequest(url: url)
+        request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let data = """
         {
