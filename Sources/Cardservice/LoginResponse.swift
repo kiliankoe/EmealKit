@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct LoginResponse {
+struct LoginResponse: Decodable {
     let authToken: String
     // The rest here is seemingly unecessary
 }
