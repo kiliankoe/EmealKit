@@ -24,7 +24,7 @@ public struct Cardservice {
         """.data(using: .utf8)
         request.httpBody = data
 
-        let explicitCompletion: (Result<[LoginResponse]>) -> Void = { result in
+        Network.dataTask(request: request, session: session) { (result: Result<[LoginResponse]>) in
             switch result {
             case .failure(let error):
                 completion(Result(failure: error))
@@ -37,6 +37,5 @@ public struct Cardservice {
                 completion(Result(success: service))
             }
         }
-        Network.dataTask(request: request, session: session, completion: explicitCompletion)
     }
 }
