@@ -23,9 +23,9 @@ enum Network {
             guard
                 let response = response as? HTTPURLResponse,
                 let data = data
-                else {
-                    completion(Result(failure: Error.network))
-                    return
+            else {
+                completion(Result(failure: Error.network))
+                return
             }
 
             guard response.statusCode / 100 == 2 else {
