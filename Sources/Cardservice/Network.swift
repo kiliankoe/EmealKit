@@ -12,8 +12,9 @@ enum Network {
     static func dataTask<T: Decodable>(request: URLRequest, session: URLSession = .shared, completion: @escaping (Result<T>) -> Void) {
         var request = request
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("Authorization", forHTTPHeaderField: "Basic S0FTVkM6ekt2NXlFMUxaVW12VzI5SQ==")
-        request.setValue("User-Agent", forHTTPHeaderField: "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
+        request.setValue("Basic S0FTVkM6ekt2NXlFMUxaVW12VzI5SQ==", forHTTPHeaderField: "Authorization")
+        request.setValue("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+
         session.dataTask(with: request) { data, response, error in
             guard error == nil else {
                 completion(Result(failure: error!))
