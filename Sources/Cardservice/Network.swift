@@ -42,6 +42,6 @@ enum Network {
                 return
             }
 
-            }.resume()
+        }.resume()
     }
 }
