@@ -17,6 +17,10 @@ extension URL {
         return URL(string: "LOGIN", relativeTo: URL.cardserviceAPIBase)!
     }
 
+    static var cardserviceCarddata: URL {
+        return URL(string: "KARTE", relativeTo: URL.cardserviceAPIBase)!
+    }
+
     static var cardserviceTransactions: URL {
         return URL(string: "TRANSPOS", relativeTo: URL.cardserviceAPIBase)!
     }

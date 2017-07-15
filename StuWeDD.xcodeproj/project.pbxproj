@@ -11,10 +11,10 @@
 		395686BB1F1AB6CA00F173C2 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686B91F1AB6CA00F173C2 /* Cardservice.swift */; };
 		395686BC1F1AB6CA00F173C2 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686B91F1AB6CA00F173C2 /* Cardservice.swift */; };
 		395686BD1F1AB6CA00F173C2 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686B91F1AB6CA00F173C2 /* Cardservice.swift */; };
-		395686BF1F1AB74500F173C2 /* Carddata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* Carddata.swift */; };
-		395686C01F1AB74500F173C2 /* Carddata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* Carddata.swift */; };
-		395686C11F1AB74500F173C2 /* Carddata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* Carddata.swift */; };
-		395686C21F1AB74500F173C2 /* Carddata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* Carddata.swift */; };
+		395686BF1F1AB74500F173C2 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* CardData.swift */; };
+		395686C01F1AB74500F173C2 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* CardData.swift */; };
+		395686C11F1AB74500F173C2 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* CardData.swift */; };
+		395686C21F1AB74500F173C2 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686BE1F1AB74500F173C2 /* CardData.swift */; };
 		395686C41F1AB93B00F173C2 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686C31F1AB93B00F173C2 /* Transaction.swift */; };
 		395686C51F1AB93B00F173C2 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686C31F1AB93B00F173C2 /* Transaction.swift */; };
 		395686C61F1AB93B00F173C2 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395686C31F1AB93B00F173C2 /* Transaction.swift */; };
@@ -76,7 +76,7 @@
 
 /* Begin PBXFileReference section */
 		395686B91F1AB6CA00F173C2 /* Cardservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardservice.swift; sourceTree = "<group>"; };
-		395686BE1F1AB74500F173C2 /* Carddata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Carddata.swift; sourceTree = "<group>"; };
+		395686BE1F1AB74500F173C2 /* CardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardData.swift; sourceTree = "<group>"; };
 		395686C31F1AB93B00F173C2 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		395686C81F1AB9E900F173C2 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		395686CD1F1ABB5A00F173C2 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
@@ -156,7 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				395686B91F1AB6CA00F173C2 /* Cardservice.swift */,
-				395686BE1F1AB74500F173C2 /* Carddata.swift */,
+				395686BE1F1AB74500F173C2 /* CardData.swift */,
 				395686C31F1AB93B00F173C2 /* Transaction.swift */,
 				395686C81F1AB9E900F173C2 /* LoginResponse.swift */,
 				395686D71F1ABBA800F173C2 /* Network.swift */,
@@ -519,7 +519,7 @@
 				395686D81F1ABBA800F173C2 /* Network.swift in Sources */,
 				395686BA1F1AB6CA00F173C2 /* Cardservice.swift in Sources */,
 				395686C41F1AB93B00F173C2 /* Transaction.swift in Sources */,
-				395686BF1F1AB74500F173C2 /* Carddata.swift in Sources */,
+				395686BF1F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D31F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686C91F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
 			);
@@ -543,7 +543,7 @@
 				395686DA1F1ABBA800F173C2 /* Network.swift in Sources */,
 				395686BC1F1AB6CA00F173C2 /* Cardservice.swift in Sources */,
 				395686C61F1AB93B00F173C2 /* Transaction.swift in Sources */,
-				395686C11F1AB74500F173C2 /* Carddata.swift in Sources */,
+				395686C11F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D51F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CB1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
 			);
@@ -558,7 +558,7 @@
 				395686DB1F1ABBA800F173C2 /* Network.swift in Sources */,
 				395686BD1F1AB6CA00F173C2 /* Cardservice.swift in Sources */,
 				395686C71F1AB93B00F173C2 /* Transaction.swift in Sources */,
-				395686C21F1AB74500F173C2 /* Carddata.swift in Sources */,
+				395686C21F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D61F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CC1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
 			);
@@ -573,7 +573,7 @@
 				395686D91F1ABBA800F173C2 /* Network.swift in Sources */,
 				395686BB1F1AB6CA00F173C2 /* Cardservice.swift in Sources */,
 				395686C51F1AB93B00F173C2 /* Transaction.swift in Sources */,
-				395686C01F1AB74500F173C2 /* Carddata.swift in Sources */,
+				395686C01F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D41F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CA1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
 			);

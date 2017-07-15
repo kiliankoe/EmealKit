@@ -10,6 +10,7 @@ import Foundation
 
 public struct Cardservice {
     let username: String
+    let cardnumber: String
     let authToken: String
 
     public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice>) -> Void) {
@@ -34,8 +35,22 @@ public struct Cardservice {
                     completion(Result(failure: Error.authentication))
                     return
                 }
-                let service = Cardservice(username: username, authToken: first.authToken)
+                let service = Cardservice(username: username, cardnumber: first.karteNr, authToken: first.authToken)
                 completion(Result(success: service))
+            }
+        }
+    }
+
+    public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData]>) -> Void) {
+        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: .cardserviceCarddata)!
+        let request = URLRequest(url: url)
+        Network.dataTask(request: request, session: session) { (result: Result<[CardDataService]>) in
+            switch result {
+            case .failure(let error):
+                completion(Result(failure: error))
+            case .success(let servicedata):
+                let carddata = servicedata.map { CardData(from: $0) }
+                completion(Result(success: carddata))
             }
         }
     }

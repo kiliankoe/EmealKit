@@ -1,5 +1,5 @@
 //
-//  Carddata.swift
+//  CardData.swift
 //  StuWeDD
 //
 //  Created by Kilian Költzsch on 15.07.17.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Carddata {
+public struct CardData {
     public let id: Int
     public let cardNumber: String
     public let chargeAmount: Int
@@ -24,7 +24,7 @@ public struct Carddata {
     public let singlepaymentDebit: Bool
     public let singlepaymentPaypal: Bool
 
-    init(from service: CarddataService) {
+    init(from service: CardDataService) {
         self.id = service.id
         self.cardNumber = service.karteNr
         self.chargeAmount = service.betragAufwertung
@@ -42,7 +42,7 @@ public struct Carddata {
     }
 }
 
-struct CarddataService: Codable {
+struct CardDataService: Decodable {
     let id: Int
     let karteNr: String
     let betragAufwertung: Int
