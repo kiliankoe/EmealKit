@@ -12,4 +12,5 @@ public enum Error: Swift.Error {
     case network
     case authentication
     case server(statusCode: Int)
+    case decoding(description: String)
 }

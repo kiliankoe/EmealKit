@@ -76,8 +76,33 @@ public struct Cardservice {
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
     public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction]>) -> Void) {
-        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
-        let request = URLRequest(url: url)
-        Network.dataTask(request: request, session: session, completion: completion)
+        // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each other.
+
+        let transactionURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
+        let transactionRequest = URLRequest(url: transactionURL)
+
+        Network.dataTask(request: transactionRequest, session: session) { (result: Result<[TransactionService]>) in
+            switch result {
+            case .failure(let error):
+                completion(Result(failure: error))
+            case .success(let services):
+                let positionsURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactionPositions)!
+                let positionsRequest = URLRequest(url: positionsURL)
+
+                Network.dataTask(request: positionsRequest, session: session) { (result: Result<[Transaction.Position]>) in
+                    switch result {
+                    case .failure(let error):
+                        completion(Result(failure: error))
+                    case .success(let positions):
+                        do {
+                            let transactions = try Transaction.create(from: services, filtering: positions)
+                            completion(Result(success: transactions))
+                        } catch {
+                            completion(Result(failure: error))
+                        }
+                    }
+                }
+            }
+        }
     }
 }

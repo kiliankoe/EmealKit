@@ -8,6 +8,32 @@
 
 import Foundation
 
+extension URL {
+    static var cardservice: URL {
+        return URL(string: "https://kartenservicedaten.studentenwerk-dresden.de:8080/")!
+    }
+
+    static var cardserviceAPIBase: URL {
+        return URL(string: "TL1/TLM/KASVC/", relativeTo: URL.cardservice)!
+    }
+
+    static var cardserviceLogin: URL {
+        return URL(string: "LOGIN", relativeTo: URL.cardserviceAPIBase)!
+    }
+
+    static var cardserviceCarddata: URL {
+        return URL(string: "KARTE", relativeTo: URL.cardserviceAPIBase)!
+    }
+
+    static var cardserviceTransactions: URL {
+        return URL(string: "TRANS", relativeTo: URL.cardserviceAPIBase)!
+    }
+
+    static var cardserviceTransactionPositions: URL {
+        return URL(string: "TRANSPOS", relativeTo: URL.cardserviceAPIBase)!
+    }
+}
+
 enum Network {
     static func dataTask<T: Decodable>(request: URLRequest, session: URLSession = .shared, completion: @escaping (Result<T>) -> Void) {
         var request = request

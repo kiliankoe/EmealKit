@@ -9,13 +9,26 @@
 import Foundation
 
 extension Date {
-    static var shortGermanFormatter: DateFormatter = {
+    static var shortGermanDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
         return formatter
     }()
 
+    static var shortGermanDateTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy HH:mm"
+        return formatter
+    }()
+
     var shortGerman: String {
-        return Date.shortGermanFormatter.string(from: self)
+        return Date.shortGermanDateFormatter.string(from: self)
+    }
+
+    init?(shortGermanDateTime str: String) {
+        guard let date = Date.shortGermanDateTimeFormatter.date(from: str) else {
+            return nil
+        }
+        self = date
     }
 }
