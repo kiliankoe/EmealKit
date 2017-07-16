@@ -6,7 +6,7 @@ Swift library for accessing some of the data the [Studentenwerk Dresden](http://
 
 ## Quick Start
 
-Talk to the [Cardservice](https://kartenservice.studentenwerk-dresden.de/) to acquire data about your Emeal card. You probably need to have enabled AutoLoad to even have login data to begin with, although I'm pretty unsure about that.
+Talk to the [Cardservice](www.studentenwerk-dresden.de/mensen/kartenservice/) to acquire data about your Emeal card. You will need to have registered for AutoLoad to have the necessary authentication details.
 
 ```swift
 Cardservice.login(username: "1234567890", password: "hunter2") { result in
