@@ -80,29 +80,25 @@ public struct Cardservice {
 
         let transactionURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
         let transactionRequest = URLRequest(url: transactionURL)
+        let positionsURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactionPositions)!
+        let positionsRequest = URLRequest(url: positionsURL)
 
-        Network.dataTask(request: transactionRequest, session: session) { (result: Result<[TransactionService]>) in
-            switch result {
-            case .failure(let error):
-                completion(Result(failure: error))
-            case .success(let services):
-                let positionsURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactionPositions)!
-                let positionsRequest = URLRequest(url: positionsURL)
-
-                Network.dataTask(request: positionsRequest, session: session) { (result: Result<[Transaction.Position]>) in
-                    switch result {
-                    case .failure(let error):
-                        completion(Result(failure: error))
-                    case .success(let positions):
-                        do {
-                            var transactions = try Transaction.create(from: services, filtering: positions)
-                            transactions.sort { lhs, rhs in
-                                return lhs.date < rhs.date
-                            }
-                            completion(Result(success: transactions))
-                        } catch {
-                            completion(Result(failure: error))
+        Network.dataTask(request: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService]>) in
+            Network.dataTask(request: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position]>) in
+                switch (transactionsResult, positionsResult) {
+                case (.failure(let error), _):
+                    completion(Result(failure: error))
+                case (_, .failure(let error)):
+                    completion(Result(failure: error))
+                case (.success(let services), .success(let positions)):
+                    do {
+                        var transactions = try Transaction.create(from: services, filtering: positions)
+                        transactions.sort { lhs, rhs in
+                            return lhs.date < rhs.date
                         }
+                        completion(Result(success: transactions))
+                    } catch let error {
+                        completion(Result(failure: error))
                     }
                 }
             }
