@@ -119,3 +119,58 @@ public extension Transaction {
         }
     }
 }
+
+extension Transaction: Comparable {
+    public static func <(lhs: Transaction, rhs: Transaction) -> Bool {
+        return lhs.date < rhs.date
+    }
+
+    public static func ==(lhs: Transaction, rhs: Transaction) -> Bool {
+        return lhs.transactionID == rhs.transactionID
+    }
+}
+
+extension Transaction: Hashable {
+    public var hashValue: Int {
+        return self.transactionID.hashValue
+    }
+}
+
+extension Transaction: CustomStringConvertible {
+    public var description: String {
+        return "\(self.date.shortGerman): \(self.location) \(self.amount.priceValue)"
+    }
+}
+
+extension Transaction.Position: Comparable {
+    public static func <(lhs: Transaction.Position, rhs: Transaction.Position) -> Bool {
+        return lhs.positionID < rhs.positionID
+    }
+
+    public static func ==(lhs: Transaction.Position, rhs: Transaction.Position) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+extension Transaction.Position: Hashable {
+    public var hashValue: Int {
+        return (self.name + self.transactionID).hashValue + self.positionID.hashValue
+    }
+}
+
+extension Transaction.Position: CustomStringConvertible {
+    public var description: String {
+        return "\(self.name) \(self.price.priceValue)"
+    }
+}
+
+extension Transaction.Kind: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .sale:
+            return "Verkauf"
+        case .cardCharge:
+            return "Karte"
+        }
+    }
+}

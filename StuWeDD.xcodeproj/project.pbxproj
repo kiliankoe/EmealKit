@@ -42,6 +42,10 @@
 		39D245101F1B8AB30083D512 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D2450E1F1B8AB30083D512 /* Transaction.swift */; };
 		39D245111F1B8AB30083D512 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D2450E1F1B8AB30083D512 /* Transaction.swift */; };
 		39D245121F1B8AB30083D512 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D2450E1F1B8AB30083D512 /* Transaction.swift */; };
+		39D245141F1BA0E00083D512 /* Double+priceValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D245131F1BA0E00083D512 /* Double+priceValue.swift */; };
+		39D245151F1BA0E00083D512 /* Double+priceValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D245131F1BA0E00083D512 /* Double+priceValue.swift */; };
+		39D245161F1BA0E00083D512 /* Double+priceValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D245131F1BA0E00083D512 /* Double+priceValue.swift */; };
+		39D245171F1BA0E00083D512 /* Double+priceValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D245131F1BA0E00083D512 /* Double+priceValue.swift */; };
 		52D6D9871BEFF229002C0205 /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* StuWeDD.framework */; };
 		DD7502881C68FEDE006590AF /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6DA0F1BF000BD002C0205 /* StuWeDD.framework */; };
 		DD7502921C690C7A006590AF /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D9F01BEFFFBE002C0205 /* StuWeDD.framework */; };
@@ -81,6 +85,7 @@
 		395A655B1F1AC4C000F9712D /* CardserviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardserviceTests.swift; sourceTree = "<group>"; };
 		39D245091F1AD71F0083D512 /* Date+short.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+short.swift"; sourceTree = "<group>"; };
 		39D2450E1F1B8AB30083D512 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		39D245131F1BA0E00083D512 /* Double+priceValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Double+priceValue.swift"; path = "Sources/Cardservice/Double+priceValue.swift"; sourceTree = SOURCE_ROOT; };
 		52D6D97C1BEFF229002C0205 /* StuWeDD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StuWeDD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9861BEFF229002C0205 /* StuWeDD-iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "StuWeDD-iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9E21BEFFF6E002C0205 /* StuWeDD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StuWeDD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +164,7 @@
 				395686D21F1ABB6A00F173C2 /* Error.swift */,
 				395686CD1F1ABB5A00F173C2 /* Result.swift */,
 				39D245091F1AD71F0083D512 /* Date+short.swift */,
+				39D245131F1BA0E00083D512 /* Double+priceValue.swift */,
 			);
 			path = Cardservice;
 			sourceTree = "<group>";
@@ -517,6 +523,7 @@
 				395686BF1F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D31F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686C91F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
+				39D245141F1BA0E00083D512 /* Double+priceValue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,6 +547,7 @@
 				395686C11F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D51F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CB1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
+				39D245161F1BA0E00083D512 /* Double+priceValue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -555,6 +563,7 @@
 				395686C21F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D61F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CC1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
+				39D245171F1BA0E00083D512 /* Double+priceValue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -570,6 +579,7 @@
 				395686C01F1AB74500F173C2 /* CardData.swift in Sources */,
 				395686D41F1ABB6A00F173C2 /* Error.swift in Sources */,
 				395686CA1F1AB9E900F173C2 /* LoginResponse.swift in Sources */,
+				39D245151F1BA0E00083D512 /* Double+priceValue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

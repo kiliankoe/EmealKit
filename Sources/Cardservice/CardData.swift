@@ -58,3 +58,9 @@ struct CardDataService: Decodable {
     let einmalzahlungLastschrift: Int
     let einmalzahlungPayPal: Int
 }
+
+extension CardData: CustomStringConvertible {
+    public var description: String {
+        return "Emeal \(self.cardNumber)"
+    }
+}
