@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StuWeDD"
-  s.version     = "0.2.0"
+  s.version     = "0.2.1"
   s.summary     = "Access Studentenwerk Dresden data"
   s.description = <<-DESC
     Access some of the data the Studentenwerk Dresden has to offer.
