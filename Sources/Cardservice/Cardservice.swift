@@ -95,7 +95,10 @@ public struct Cardservice {
                         completion(Result(failure: error))
                     case .success(let positions):
                         do {
-                            let transactions = try Transaction.create(from: services, filtering: positions)
+                            var transactions = try Transaction.create(from: services, filtering: positions)
+                            transactions.sort { lhs, rhs in
+                                return lhs.date < rhs.date
+                            }
                             completion(Result(success: transactions))
                         } catch {
                             completion(Result(failure: error))
