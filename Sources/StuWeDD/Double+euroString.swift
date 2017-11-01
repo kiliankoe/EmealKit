@@ -1,5 +1,5 @@
 //
-//  Double+priceValue.swift
+//  Double+euroString.swift
 //  StuWeDD
 //
 //  Created by Kilian Költzsch on 16.07.17.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension Double {
-    var priceValue: String {
+public extension Double {
+    var euroString: String {
         return String(format: "%.2f€", self)
     }
 }

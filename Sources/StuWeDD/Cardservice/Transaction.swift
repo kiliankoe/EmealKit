@@ -138,7 +138,7 @@ extension Transaction: Hashable {
 
 extension Transaction: CustomStringConvertible {
     public var description: String {
-        return "\(self.date.shortGerman): \(self.location) \(self.amount.priceValue)"
+        return "\(self.date.shortGerman): \(self.location) \(self.amount.euroString)"
     }
 }
 
@@ -160,7 +160,7 @@ extension Transaction.Position: Hashable {
 
 extension Transaction.Position: CustomStringConvertible {
     public var description: String {
-        return "\(self.name) \(self.price.priceValue)"
+        return "\(self.name) \(self.price.euroString)"
     }
 }
 

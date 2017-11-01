@@ -31,7 +31,7 @@
 		OBJ_38 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* CardData.swift */; };
 		OBJ_39 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Cardservice.swift */; };
 		OBJ_40 /* Date+short.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Date+short.swift */; };
-		OBJ_41 /* Double+priceValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Double+priceValue.swift */; };
+		OBJ_41 /* Double+euroString.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Double+euroString.swift */; };
 		OBJ_42 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* Error.swift */; };
 		OBJ_43 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* LoginResponse.swift */; };
 		OBJ_44 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* Network.swift */; };
@@ -64,7 +64,7 @@
 		3964E9A01FA94BBA009F9704 /* Regex+match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Regex+match.swift"; sourceTree = "<group>"; };
 		OBJ_10 /* Cardservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardservice.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Date+short.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+short.swift"; sourceTree = "<group>"; };
-		OBJ_12 /* Double+priceValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+priceValue.swift"; sourceTree = "<group>"; };
+		OBJ_12 /* Double+euroString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+euroString.swift"; sourceTree = "<group>"; };
 		OBJ_13 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		OBJ_14 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		OBJ_15 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
@@ -170,7 +170,7 @@
 				3964E9971FA934C3009F9704 /* Mensa */,
 				3964E9911FA931A5009F9704 /* Cardservice */,
 				OBJ_11 /* Date+short.swift */,
-				OBJ_12 /* Double+priceValue.swift */,
+				OBJ_12 /* Double+euroString.swift */,
 				OBJ_13 /* Error.swift */,
 				OBJ_15 /* Network.swift */,
 				OBJ_16 /* Result.swift */,
@@ -263,7 +263,7 @@
 				3964E9A11FA94BBA009F9704 /* Regex+match.swift in Sources */,
 				OBJ_39 /* Cardservice.swift in Sources */,
 				OBJ_40 /* Date+short.swift in Sources */,
-				OBJ_41 /* Double+priceValue.swift in Sources */,
+				OBJ_41 /* Double+euroString.swift in Sources */,
 				OBJ_42 /* Error.swift in Sources */,
 				OBJ_43 /* LoginResponse.swift in Sources */,
 				OBJ_44 /* Network.swift in Sources */,
