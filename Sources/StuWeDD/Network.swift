@@ -39,7 +39,7 @@ extension URL {
 }
 
 enum Network {
-    static func dataTask<T: Decodable>(request: URLRequest, session: URLSession = .shared, completion: @escaping (Result<T>) -> Void) {
+    static func dataTask<T: Decodable>(request: URLRequest, session: URLSession, completion: @escaping (Result<T>) -> Void) {
         var request = request
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Basic S0FTVkM6ekt2NXlFMUxaVW12VzI5SQ==", forHTTPHeaderField: "Authorization") // this is hardcoded in dataprovider.js
