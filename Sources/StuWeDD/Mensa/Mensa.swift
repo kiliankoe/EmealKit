@@ -40,7 +40,9 @@ public enum Mensa {
         case Mensa.wuEins: return 33
         case Mensa.zeltschloesschen: return 35
         case Mensa.zittau: return 1
-        default: return nil
+        default:
+            print("No ID known for '\(mensa)'.")
+            return nil
         }
     }
 
