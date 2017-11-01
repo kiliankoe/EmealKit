@@ -26,6 +26,18 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
 }
 ```
 
+Or get current meal information.
+
+```swift
+Meal.fetch(forMensa: Mensa.alteMensa.name) { result in
+    guard let meals = result.success else { return }
+    
+    for meal in meals {
+	    print(meal.name)
+    }
+}
+```
+
 
 
 ## Installation
