@@ -13,4 +13,5 @@ public enum Error: Swift.Error {
     case authentication
     case server(statusCode: Int)
     case decoding(description: String)
+    case feed(error: Swift.Error)
 }
