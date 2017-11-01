@@ -52,6 +52,6 @@ pod 'StuWeDD'
 github "kiliankoe/StuWeDD"
 
 // Swift Package Manager
-.Package(url: "https://github.com/kiliankoe/StuWeDD", majorVersion: 0)
+.package(url: "https://github.com/kiliankoe/StuWeDD", from: "latest")
 ```
 
