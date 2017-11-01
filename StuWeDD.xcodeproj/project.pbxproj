@@ -22,6 +22,10 @@
 
 /* Begin PBXBuildFile section */
 		3964E9931FA931C4009F9704 /* CardserviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* CardserviceTests.swift */; };
+		3964E9991FA934DD009F9704 /* Meal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E9981FA934DD009F9704 /* Meal.swift */; };
+		3964E99B1FA9369D009F9704 /* Mensa.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99A1FA9369D009F9704 /* Mensa.swift */; };
+		3964E99D1FA939D4009F9704 /* FeedParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99C1FA939D4009F9704 /* FeedParser.swift */; };
+		3964E99F1FA9439B009F9704 /* MensaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99E1FA9439B009F9704 /* MensaTests.swift */; };
 		OBJ_31 /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "StuWeDD::StuWeDD::Product" /* StuWeDD.framework */; };
 		OBJ_38 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* CardData.swift */; };
 		OBJ_39 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Cardservice.swift */; };
@@ -52,6 +56,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3964E9981FA934DD009F9704 /* Meal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meal.swift; sourceTree = "<group>"; };
+		3964E99A1FA9369D009F9704 /* Mensa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensa.swift; sourceTree = "<group>"; };
+		3964E99C1FA939D4009F9704 /* FeedParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParser.swift; sourceTree = "<group>"; };
+		3964E99E1FA9439B009F9704 /* MensaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MensaTests.swift; sourceTree = "<group>"; };
 		OBJ_10 /* Cardservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardservice.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Date+short.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+short.swift"; sourceTree = "<group>"; };
 		OBJ_12 /* Double+priceValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+priceValue.swift"; sourceTree = "<group>"; };
@@ -98,6 +106,17 @@
 			path = Sources/StuWeDD/Cardservice;
 			sourceTree = SOURCE_ROOT;
 		};
+		3964E9971FA934C3009F9704 /* Mensa */ = {
+			isa = PBXGroup;
+			children = (
+				3964E9981FA934DD009F9704 /* Meal.swift */,
+				3964E99A1FA9369D009F9704 /* Mensa.swift */,
+				3964E99C1FA939D4009F9704 /* FeedParser.swift */,
+			);
+			name = Mensa;
+			path = Sources/StuWeDD/Mensa;
+			sourceTree = SOURCE_ROOT;
+		};
 		OBJ_18 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_20 /* CardserviceTests.swift */,
+				3964E99E1FA9439B009F9704 /* MensaTests.swift */,
 			);
 			name = StuWeDDTests;
 			path = Tests/StuWeDDTests;
@@ -145,6 +165,7 @@
 		OBJ_8 /* StuWeDD */ = {
 			isa = PBXGroup;
 			children = (
+				3964E9971FA934C3009F9704 /* Mensa */,
 				3964E9911FA931A5009F9704 /* Cardservice */,
 				OBJ_11 /* Date+short.swift */,
 				OBJ_12 /* Double+priceValue.swift */,
@@ -224,6 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				3964E99F1FA9439B009F9704 /* MensaTests.swift in Sources */,
 				3964E9931FA931C4009F9704 /* CardserviceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,6 +254,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				3964E9991FA934DD009F9704 /* Meal.swift in Sources */,
+				3964E99D1FA939D4009F9704 /* FeedParser.swift in Sources */,
 				OBJ_38 /* CardData.swift in Sources */,
 				OBJ_39 /* Cardservice.swift in Sources */,
 				OBJ_40 /* Date+short.swift in Sources */,
@@ -239,6 +263,7 @@
 				OBJ_42 /* Error.swift in Sources */,
 				OBJ_43 /* LoginResponse.swift in Sources */,
 				OBJ_44 /* Network.swift in Sources */,
+				3964E99B1FA9369D009F9704 /* Mensa.swift in Sources */,
 				OBJ_45 /* Result.swift in Sources */,
 				OBJ_46 /* Transaction.swift in Sources */,
 			);
