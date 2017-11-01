@@ -16,6 +16,31 @@ public struct Meal {
         public let employee: Double
     }
 
+    public static func fetch(session: URLSession = .shared, completion: @escaping (Result<[Meal]>) -> Void) {
+        // TODO: Use Network instead
+        session.dataTask(with: URL.mensaPlan) { data, _, _ in
+            guard let data = data else {
+                completion(.failure(Error.network))
+                return
+            }
+            FeedParser(data: data) { result in
+                completion(result)
+            }
+        }.resume()
+    }
+
+    public static func fetch(forMensa mensa: String, session: URLSession = .shared, completion: @escaping (Result<[Meal]>) -> Void) {
+        Meal.fetch(session: session) { result in
+            guard let meals = result.success else {
+                completion(result)
+                return
+            }
+
+            let filteredMeals = meals.filter { $0.mensa == mensa }
+            completion(.success(filteredMeals))
+        }
+    }
+
     private static let pricesRgx = try! NSRegularExpression(pattern: "(\\d+.\\d+)")
     private static let idRgx = try! NSRegularExpression(pattern: "details-(\\d+).html")
 
