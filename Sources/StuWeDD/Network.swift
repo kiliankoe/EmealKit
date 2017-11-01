@@ -32,6 +32,10 @@ extension URL {
     static var cardserviceTransactionPositions: URL {
         return URL(string: "TRANSPOS", relativeTo: URL.cardserviceAPIBase)!
     }
+
+    static var mensaPlan: URL {
+        return URL(string: "https://www.studentenwerk-dresden.de/feeds/speiseplan.rss")!
+    }
 }
 
 enum Network {
