@@ -46,8 +46,22 @@ public struct Meal {
         } else {
             self.price = nil
         }
+
         self.url = url
-        self.imageURL = nil
-        self.isSoldOut = false
+
+        if let mensaID = Mensa.id(for: self.mensa) {
+            self.imageURL = Meal.imageURL(date: Date(), mensaID: mensaID, mealID: self.id)
+        } else {
+            self.imageURL = nil
+        }
+
+        self.isSoldOut = title.contains("ausverkauft")
+    }
+
+    static func imageURL(date: Date, mensaID: Int, mealID: String) -> URL? {
+        let calendar = Calendar(identifier: .gregorian)
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        return URL(string: "https://bilderspeiseplan.studentenwerk-dresden.de/m\(mensaID)/\(year)\(month)/thumbs/\(mealID).jpg")
     }
 }
