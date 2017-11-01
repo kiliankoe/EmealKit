@@ -26,6 +26,7 @@
 		3964E99B1FA9369D009F9704 /* Mensa.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99A1FA9369D009F9704 /* Mensa.swift */; };
 		3964E99D1FA939D4009F9704 /* FeedParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99C1FA939D4009F9704 /* FeedParser.swift */; };
 		3964E99F1FA9439B009F9704 /* MensaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E99E1FA9439B009F9704 /* MensaTests.swift */; };
+		3964E9A11FA94BBA009F9704 /* Regex+match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964E9A01FA94BBA009F9704 /* Regex+match.swift */; };
 		OBJ_31 /* StuWeDD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "StuWeDD::StuWeDD::Product" /* StuWeDD.framework */; };
 		OBJ_38 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* CardData.swift */; };
 		OBJ_39 /* Cardservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Cardservice.swift */; };
@@ -60,6 +61,7 @@
 		3964E99A1FA9369D009F9704 /* Mensa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensa.swift; sourceTree = "<group>"; };
 		3964E99C1FA939D4009F9704 /* FeedParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParser.swift; sourceTree = "<group>"; };
 		3964E99E1FA9439B009F9704 /* MensaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MensaTests.swift; sourceTree = "<group>"; };
+		3964E9A01FA94BBA009F9704 /* Regex+match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Regex+match.swift"; sourceTree = "<group>"; };
 		OBJ_10 /* Cardservice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardservice.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Date+short.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+short.swift"; sourceTree = "<group>"; };
 		OBJ_12 /* Double+priceValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+priceValue.swift"; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				OBJ_13 /* Error.swift */,
 				OBJ_15 /* Network.swift */,
 				OBJ_16 /* Result.swift */,
+				3964E9A01FA94BBA009F9704 /* Regex+match.swift */,
 			);
 			name = StuWeDD;
 			path = Sources/StuWeDD;
@@ -257,6 +260,7 @@
 				3964E9991FA934DD009F9704 /* Meal.swift in Sources */,
 				3964E99D1FA939D4009F9704 /* FeedParser.swift in Sources */,
 				OBJ_38 /* CardData.swift in Sources */,
+				3964E9A11FA94BBA009F9704 /* Regex+match.swift in Sources */,
 				OBJ_39 /* Cardservice.swift in Sources */,
 				OBJ_40 /* Date+short.swift in Sources */,
 				OBJ_41 /* Double+priceValue.swift in Sources */,
