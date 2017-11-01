@@ -12,8 +12,8 @@ public struct Meal {
     public let isSoldOut: Bool
 
     public struct Price {
-        let student: Double
-        let employee: Double
+        public let student: Double
+        public let employee: Double
     }
 
     private static let pricesRgx = try! NSRegularExpression(pattern: "(\\d+.\\d+)")
@@ -36,6 +36,7 @@ public struct Meal {
         if let _ = title.range(of: " \\(.*\\)", options: .regularExpression) {
             let prices = Meal.pricesRgx.matches(in: title)
                 .flatMap(Double.init)
+
             if prices.count == 1 {
                 self.price = Price(student: prices[0], employee: prices[0])
             } else if prices.count == 2 {
@@ -50,7 +51,7 @@ public struct Meal {
         self.url = url
 
         if let mensaID = Mensa.id(for: self.mensa) {
-            self.imageURL = Meal.imageURL(date: Date(), mensaID: mensaID, mealID: self.id)
+            self.imageURL = Meal.imageURL(for: Date(), mensaID: mensaID, mealID: self.id)
         } else {
             self.imageURL = nil
         }
@@ -58,7 +59,7 @@ public struct Meal {
         self.isSoldOut = title.contains("ausverkauft")
     }
 
-    static func imageURL(date: Date, mensaID: Int, mealID: String) -> URL? {
+    static func imageURL(for date: Date, mensaID: Int, mealID: String) -> URL? {
         let calendar = Calendar(identifier: .gregorian)
         let year = calendar.component(.year, from: date)
         let month = calendar.component(.month, from: date)
