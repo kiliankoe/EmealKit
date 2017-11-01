@@ -6,15 +6,19 @@
 //
 
 import XCTest
-@testable import StuWeDD
+import StuWeDD
 
 class MensaTests: XCTestCase {
     func testFeedParsing() {
-        let e = expectation(description: "parse data")
+        let e = expectation(description: "get some data")
 
-        let data = try! Data(contentsOf: URL.mensaPlan)
-        FeedParser(data: data) { result in
-            dump(result)
+        Meal.fetch(forMensa: Mensa.alteMensa.name) { result in
+            guard let meals = result.success else {
+                XCTFail()
+                e.fulfill()
+                return
+            }
+
             e.fulfill()
         }
 
