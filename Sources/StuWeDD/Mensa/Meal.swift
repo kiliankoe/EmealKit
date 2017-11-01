@@ -55,7 +55,7 @@ public struct Meal {
         }
 
         self.id = Meal.idRgx.match(in: urlStr) ?? ""
-        self.name = title
+
         self.mensa = mensa
 
         if let _ = title.range(of: " \\(.*\\)", options: .regularExpression) {
@@ -69,8 +69,12 @@ public struct Meal {
             } else {
                 self.price = nil
             }
+
+            let titleWithoutPrice = title.replacingOccurrences(of: " \\(.*\\)", with: "", options: .regularExpression)
+            self.name = titleWithoutPrice
         } else {
             self.price = nil
+            self.name = title
         }
 
         self.url = url
