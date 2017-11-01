@@ -19,6 +19,10 @@ class MensaTests: XCTestCase {
                 return
             }
 
+            for meal in meals {
+                print("\(meal.name) -> \(meal.price?.student.euroString ?? "n/a")")
+            }
+
             e.fulfill()
         }
 
