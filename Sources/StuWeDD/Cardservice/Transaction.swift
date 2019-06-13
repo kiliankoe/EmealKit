@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Transaction {
+public struct Transaction: Hashable {
     public let clientID: Int
     public let id: Int
     public let transactionID: String
@@ -77,7 +77,7 @@ struct TransactionService: Codable {
 }
 
 public extension Transaction {
-    public struct Position: Codable {
+    struct Position: Codable, Hashable {
         public let clientID: Int
         public let id: Int
         public let transactionID: String
@@ -103,7 +103,7 @@ public extension Transaction {
 }
 
 public extension Transaction {
-    public enum Kind {
+    enum Kind {
         case sale
         case cardCharge
 
@@ -130,12 +130,6 @@ extension Transaction: Comparable {
     }
 }
 
-extension Transaction: Hashable {
-    public var hashValue: Int {
-        return self.transactionID.hashValue
-    }
-}
-
 extension Transaction: CustomStringConvertible {
     public var description: String {
         return "\(self.date.shortGerman): \(self.location) \(self.amount.euroString)"
@@ -149,12 +143,6 @@ extension Transaction.Position: Comparable {
 
     public static func ==(lhs: Transaction.Position, rhs: Transaction.Position) -> Bool {
         return lhs.id == rhs.id
-    }
-}
-
-extension Transaction.Position: Hashable {
-    public var hashValue: Int {
-        return (self.name + self.transactionID).hashValue + self.positionID.hashValue
     }
 }
 

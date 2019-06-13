@@ -60,7 +60,7 @@ public struct Meal {
 
         if let _ = title.range(of: " \\(.*\\)", options: .regularExpression) {
             let prices = Meal.pricesRgx.matches(in: title)
-                .flatMap(Double.init)
+                .compactMap(Double.init)
 
             if prices.count == 1 {
                 self.price = Price(student: prices[0], employee: prices[0])
