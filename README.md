@@ -33,7 +33,7 @@ Meal.fetch(forMensa: .alteMensa) { result in
     guard let meals = result.success else { return }
     
     for meal in meals {
-	    print(meal.name)
+        print(meal.name)
     }
 }
 ```
