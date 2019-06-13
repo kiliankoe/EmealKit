@@ -16,7 +16,8 @@ public struct Meal {
         public let employee: Double
     }
 
-    public static func fetch(session: URLSession = .shared, completion: @escaping (Result<[Meal]>) -> Void) {
+    public static func fetch(session: URLSession = .shared,
+                             completion: @escaping (Result<[Meal]>) -> Void) {
         // TODO: Use Network instead
         session.dataTask(with: URL.mensaPlan) { data, _, _ in
             guard let data = data else {
@@ -28,8 +29,16 @@ public struct Meal {
             }
         }.resume()
     }
+    
+    public static func fetch(forMensa mensa: Mensa,
+                             session: URLSession = .shared,
+                             completion: @escaping (Result<[Meal]>) -> Void) {
+        Meal.fetch(forMensaName: mensa.name, session: session, completion: completion)
+    }
 
-    public static func fetch(forMensa mensa: String, session: URLSession = .shared, completion: @escaping (Result<[Meal]>) -> Void) {
+    public static func fetch(forMensaName mensa: String,
+                             session: URLSession = .shared,
+                             completion: @escaping (Result<[Meal]>) -> Void) {
         Meal.fetch(session: session) { result in
             guard let meals = result.success else {
                 completion(result)

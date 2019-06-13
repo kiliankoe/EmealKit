@@ -12,7 +12,7 @@ class MensaTests: XCTestCase {
     func testFeedParsing() {
         let e = expectation(description: "get some data")
 
-        Meal.fetch(forMensa: Mensa.alteMensa.name) { result in
+        Meal.fetch(forMensa: .alteMensa) { result in
             guard let meals = result.success else {
                 XCTFail()
                 e.fulfill()

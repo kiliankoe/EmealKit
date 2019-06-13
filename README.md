@@ -29,7 +29,7 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
 Or get current meal information.
 
 ```swift
-Meal.fetch(forMensa: Mensa.alteMensa.name) { result in
+Meal.fetch(forMensa: .alteMensa) { result in
     guard let meals = result.success else { return }
     
     for meal in meals {
@@ -52,6 +52,6 @@ pod 'StuWeDD'
 github "kiliankoe/StuWeDD"
 
 // Swift Package Manager
-.package(url: "https://github.com/kiliankoe/StuWeDD", from: "latest")
+.package(url: "https://github.com/kiliankoe/StuWeDD", from: "<#latest#>")
 ```
 
