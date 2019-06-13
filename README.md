@@ -42,16 +42,8 @@ Meal.fetch(forMensa: .alteMensa) { result in
 
 ## Installation
 
-StuWeDD is available through Cocoapods, Carthage/Punic and Swift Package Manager, whatever floats your boat.
+StuWeDD is available through Swift Package Manager.
 
 ```swift
-// Cocoapods
-pod 'StuWeDD'
-
-// Carthage
-github "kiliankoe/StuWeDD"
-
-// Swift Package Manager
 .package(url: "https://github.com/kiliankoe/StuWeDD", from: "<#latest#>")
 ```
-
