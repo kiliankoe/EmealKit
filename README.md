@@ -1,4 +1,4 @@
-# 🎓 StuWeDD
+# 🎓 EmealKit
 
 Swift library for accessing some of the data the [Studentenwerk Dresden](http://www.studentenwerk-dresden.de/) has to offer.
 
@@ -6,7 +6,7 @@ Swift library for accessing some of the data the [Studentenwerk Dresden](http://
 
 ## Quick Start
 
-Talk to the [Cardservice](www.studentenwerk-dresden.de/mensen/kartenservice/) to acquire data about your Emeal card. You will need to have registered for AutoLoad to have the necessary authentication details.
+Talk to the [Cardservice](www.studentenwerk-dresden.de/mensen/kartenservice/) to acquire data about your Emeal card. You will need to have registered for Autoload to have the necessary authentication details.
 
 ```swift
 Cardservice.login(username: "1234567890", password: "hunter2") { result in
@@ -45,5 +45,5 @@ Meal.fetch(forMensa: .alteMensa) { result in
 StuWeDD is available through Swift Package Manager.
 
 ```swift
-.package(url: "https://github.com/kiliankoe/StuWeDD", from: "<#latest#>")
+.package(url: "https://github.com/kiliankoe/EmealKit.git", from: "<#latest#>")
 ```

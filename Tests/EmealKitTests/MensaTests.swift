@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import StuWeDD
+import EmealKit
 
 class MensaTests: XCTestCase {
     func testFeedParsing() {

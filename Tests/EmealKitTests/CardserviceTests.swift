@@ -8,7 +8,7 @@
 
 import Foundation
 import XCTest
-import StuWeDD
+import EmealKit
 
 class CardserviceTests: XCTestCase {
     func testLogin() {
@@ -19,7 +19,7 @@ class CardserviceTests: XCTestCase {
                 XCTFail("Shouldn't succeed with no login details")
             case .failure(let error):
                 guard
-                    let err = error as? StuWeDD.Error,
+                    let err = error as? EmealKit.Error,
                     case .server(statusCode: let status) = err,
                     status == 599
                 else {
