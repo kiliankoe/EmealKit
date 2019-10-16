@@ -13,7 +13,7 @@ class MensaTests: XCTestCase {
         let e = expectation(description: "get some data")
 
         Meal.fetch(forMensa: .alteMensa) { result in
-            guard let meals = result.success else {
+            guard let meals = try? result.get() else {
                 XCTFail()
                 e.fulfill()
                 return

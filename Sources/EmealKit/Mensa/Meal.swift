@@ -17,11 +17,11 @@ public struct Meal {
     }
 
     public static func fetch(session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal]>) -> Void) {
+                             completion: @escaping (Result<[Meal], Error>) -> Void) {
         // TODO: Use Network instead
         session.dataTask(with: URL.mensaPlan) { data, _, _ in
             guard let data = data else {
-                completion(.failure(Error.network))
+                completion(.failure(.network(nil)))
                 return
             }
             FeedParser(data: data) { result in
@@ -32,15 +32,15 @@ public struct Meal {
     
     public static func fetch(forMensa mensa: Mensa,
                              session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal]>) -> Void) {
+                             completion: @escaping (Result<[Meal], Error>) -> Void) {
         Meal.fetch(forMensaName: mensa.name, session: session, completion: completion)
     }
 
     public static func fetch(forMensaName mensa: String,
                              session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal]>) -> Void) {
+                             completion: @escaping (Result<[Meal], Error>) -> Void) {
         Meal.fetch(session: session) { result in
-            guard let meals = result.success else {
+            guard let meals = try? result.get() else {
                 completion(result)
                 return
             }

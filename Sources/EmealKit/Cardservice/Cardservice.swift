@@ -36,14 +36,14 @@ public struct Cardservice {
         Network.dataTask(request: request, session: session) { (result: Result<[LoginResponse], Error>) in
             switch result {
             case .failure(let error):
-                completion(Result(failure: error))
+                completion(.failure(error))
             case .success(let loginResponses):
                 guard let first = loginResponses.first else {
-                    completion(Result(failure: Error.authentication))
+                    completion(.failure(.authentication))
                     return
                 }
                 let service = Cardservice(username: username, cardnumber: first.karteNr, authToken: first.authToken)
-                completion(Result(success: service))
+                completion(.success(service))
             }
         }
     }
@@ -59,10 +59,10 @@ public struct Cardservice {
         Network.dataTask(request: request, session: session) { (result: Result<[CardDataService], Error>) in
             switch result {
             case .failure(let error):
-                completion(Result(failure: error))
+                completion(.failure(error))
             case .success(let servicedata):
                 let carddata = servicedata.map { CardData(from: $0) }
-                completion(Result(success: carddata))
+                completion(.success(carddata))
             }
         }
     }
@@ -87,18 +87,18 @@ public struct Cardservice {
             Network.dataTask(request: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position], Error>) in
                 switch (transactionsResult, positionsResult) {
                 case (.failure(let error), _):
-                    completion(Result(failure: error))
+                    completion(.failure(error))
                 case (_, .failure(let error)):
-                    completion(Result(failure: error))
+                    completion(.failure(error))
                 case (.success(let services), .success(let positions)):
                     do {
                         var transactions = try Transaction.create(from: services, filtering: positions)
                         transactions.sort { lhs, rhs in
                             return lhs.date < rhs.date
                         }
-                        completion(Result(success: transactions))
+                        completion(.success(transactions))
                     } catch let error {
-                        completion(Result(failure: error))
+                        completion(.failure(.decoding(error)))
                     }
                 }
             }

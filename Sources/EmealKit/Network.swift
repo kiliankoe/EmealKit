@@ -47,7 +47,7 @@ enum Network {
 
         session.dataTask(with: request) { data, response, error in
             guard error == nil else {
-                completion(Result(catching: { throw error! }))
+                completion(.failure(.network(error)))
                 return
             }
 
@@ -55,20 +55,20 @@ enum Network {
                 let response = response as? HTTPURLResponse,
                 let data = data
             else {
-                completion(Result(catching: Error.network))
+                completion(.failure(.network(nil)))
                 return
             }
 
             guard response.statusCode / 100 == 2 else {
-                completion(Result(failure: Error.server(statusCode: response.statusCode)))
+                completion(.failure(.server(statusCode: response.statusCode)))
                 return
             }
 
             do {
                 let decoded = try JSONDecoder().decode(T.self, from: data)
-                completion(Result(success: decoded))
+                completion(.success(decoded))
             } catch {
-                completion(Result(failure: error))
+                completion(.failure(.decoding(error)))
                 return
             }
 

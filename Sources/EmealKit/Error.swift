@@ -9,9 +9,10 @@
 import Foundation
 
 public enum Error: Swift.Error {
-    case network
+    case network(Swift.Error?)
     case authentication
     case server(statusCode: Int)
     case decoding(description: String)
+    case decoding(Swift.Error)
     case feed(error: Swift.Error)
 }

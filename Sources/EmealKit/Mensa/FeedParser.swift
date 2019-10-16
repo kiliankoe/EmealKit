@@ -7,10 +7,10 @@ class FeedParser: NSObject, XMLParserDelegate {
     var currentAttribute: String?
 
     var meals: [Meal] = []
-    var completion: (Result<[Meal]>) -> Void
+    var completion: (Result<[Meal], Error>) -> Void
 
     @discardableResult
-    init(data: Data, completion: @escaping (Result<[Meal]>) -> Void) {
+    init(data: Data, completion: @escaping (Result<[Meal], Error>) -> Void) {
         self.parser = XMLParser(data: data)
         self.completion = completion
         super.init()

@@ -17,13 +17,14 @@ class CardserviceTests: XCTestCase {
             switch result {
             case .success(_):
                 XCTFail("Shouldn't succeed with no login details")
+                e.fulfill()
             case .failure(let error):
                 guard
-                    let err = error as? EmealKit.Error,
-                    case .server(statusCode: let status) = err,
+                    case .server(statusCode: let status) = error,
                     status == 599
                 else {
                     XCTFail("Failed with unknown error: \(error)")
+                    e.fulfill()
                     return
                 }
                 e.fulfill()
