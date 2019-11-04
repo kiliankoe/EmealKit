@@ -7,10 +7,10 @@ class FeedParser: NSObject, XMLParserDelegate {
     var currentAttribute: String?
 
     var meals: [Meal] = []
-    var completion: (Result<[Meal], Error>) -> Void
+    var completion: (Result<[Meal], EKError>) -> Void
 
     @discardableResult
-    init(data: Data, completion: @escaping (Result<[Meal], Error>) -> Void) {
+    init(data: Data, completion: @escaping (Result<[Meal], EKError>) -> Void) {
         self.parser = XMLParser(data: data)
         self.completion = completion
         super.init()
@@ -49,6 +49,6 @@ class FeedParser: NSObject, XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, parseErrorOccurred parseError: Swift.Error) {
-        completion(.failure(Error.feed(error: parseError)))
+        completion(.failure(EKError.feed(error: parseError)))
     }
 }

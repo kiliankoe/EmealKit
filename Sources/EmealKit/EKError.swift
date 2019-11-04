@@ -1,5 +1,5 @@
 //
-//  Error.swift
+//  EKError.swift
 //  StuWeDD
 //
 //  Created by Kilian Költzsch on 15.07.17.
@@ -8,11 +8,11 @@
 
 import Foundation
 
-public enum Error: Swift.Error {
-    case network(Swift.Error?)
+public enum EKError: Error {
+    case network(Error?)
     case authentication
     case server(statusCode: Int)
     case decoding(description: String)
-    case decoding(Swift.Error)
-    case feed(error: Swift.Error)
+    case decoding(Error)
+    case feed(error: Error)
 }
