@@ -27,6 +27,7 @@ class CardserviceTests: XCTestCase {
                     e.fulfill()
                     return
                 }
+                print(error.localizedDescription)
                 e.fulfill()
             }
         }

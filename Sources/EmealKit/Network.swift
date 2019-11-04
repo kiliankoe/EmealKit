@@ -68,7 +68,7 @@ enum Network {
                 let decoded = try JSONDecoder().decode(T.self, from: data)
                 completion(.success(decoded))
             } catch {
-                completion(.failure(.decoding(error)))
+                completion(.failure(.decoding(.other(error)))) // LOL
                 return
             }
 

@@ -98,7 +98,7 @@ public struct Cardservice {
                         }
                         completion(.success(transactions))
                     } catch let error {
-                        completion(.failure(.decoding(error)))
+                        completion(.failure(.decoding(.other(error))))
                     }
                 }
             }
