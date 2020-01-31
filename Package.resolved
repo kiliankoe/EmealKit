@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "HTMLString",
+        "repositoryURL": "https://github.com/alexaubry/HTMLString.git",
+        "state": {
+          "branch": null,
+          "revision": "373048cc4084dd7481c86e3bee41612eff93b14d",
+          "version": "5.0.0"
+        }
+      },
+      {
+        "package": "Regex",
+        "repositoryURL": "https://github.com/sharplet/Regex.git",
+        "state": {
+          "branch": null,
+          "revision": "a819aed0e9555268c29a62500fe6fb781ae7f57d",
+          "version": "2.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

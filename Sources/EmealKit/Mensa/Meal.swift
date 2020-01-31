@@ -1,106 +1,187 @@
 import Foundation
+import HTMLString
+import Regex
 
-public struct Meal {
-    public let id: String
-    public let name: String
-    public let mensa: String
-    public let price: Price?
+public struct Meal: Identifiable, Decodable {
+    public var id: Int
+    public var name: String
+    public var notes: [String]
+    public var prices: Prices?
+    public var category: String
+    public var image: URL
+    public var url: URL
 
-    public let url: URL
-    public let imageURL: URL?
-
-    public let isSoldOut: Bool
-
-    public struct Price {
-        public let student: Double
-        public let employee: Double
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case notes
+        case prices
+        case category
+        case image
+        case url
     }
 
-    public static func fetch(session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal], EKError>) -> Void) {
-        // TODO: Use Network instead
-        session.dataTask(with: URL.mensaPlan) { data, _, _ in
-            guard let data = data else {
-                completion(.failure(.network(nil)))
-                return
-            }
-            FeedParser(data: data) { result in
-                completion(result)
-            }
-        }.resume()
-    }
-    
-    public static func fetch(forMensa mensa: Mensa,
-                             session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal], EKError>) -> Void) {
-        Meal.fetch(forMensaName: mensa.name, session: session, completion: completion)
-    }
+    public struct Prices: Decodable {
+        public var students: Double
+        public var employees: Double
 
-    public static func fetch(forMensaName mensa: String,
-                             session: URLSession = .shared,
-                             completion: @escaping (Result<[Meal], EKError>) -> Void) {
-        Meal.fetch(session: session) { result in
-            guard let meals = try? result.get() else {
-                completion(result)
-                return
-            }
+        private enum CodingKeys: String, CodingKey {
+            case students = "Studierende"
+            case employees = "Bedienstete"
+        }
 
-            let filteredMeals = meals.filter { $0.mensa == mensa }
-            completion(.success(filteredMeals))
+        public init(students: Double, employees: Double) {
+            self.students = students
+            self.employees = employees
         }
     }
 
-    private static let pricesRgx = try! NSRegularExpression(pattern: "(\\d+.\\d+)")
-    private static let idRgx = try! NSRegularExpression(pattern: "details-(\\d+).html")
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.notes = try container.decode([String].self, forKey: .notes)
+            .map { $0.removingHTMLEntities }
 
-    init?(from dict: [String: String]) {
-        guard
-            let title = dict["title"],
-            let urlStr = dict["link"],
-            let url = URL(string: urlStr),
-            let mensa = dict["author"]
-        else {
+        if let prices = try? container.decode(Prices.self, forKey: .prices) {
+            self.prices = prices
+        } else {
+            self.prices = nil
+        }
+
+        self.category = try container.decode(String.self, forKey: .category)
+        self.image = try container.decode(URL.self, forKey: .image)
+        self.url = try container.decode(URL.self, forKey: .url)
+    }
+
+    public init(id: Int, name: String, notes: [String], prices: Meal.Prices?, category: String, image: URL, url: URL) {
+        self.id = id
+        self.name = name
+        self.notes = notes
+        self.prices = prices
+        self.category = category
+        self.image = image
+        self.url = url
+    }
+
+    static var placeholderImageURL: URL {
+        return URL(string: "https://static.studentenwerk-dresden.de/bilder/mensen/studentenwerk-dresden-lieber-mensen-gehen.jpg")!
+    }
+
+    public var imageIsPlaceholder: Bool {
+        image == Self.placeholderImageURL
+    }
+
+    public var diet: [Diet] {
+        self.notes
+            .compactMap { Diet(note: $0) }
+            .unique
+    }
+
+    public var ingredients: [Ingredient] {
+        self.notes
+            .compactMap { Ingredient(note: $0) }
+            .unique
+    }
+
+    public var allergens: [Allergen] {
+        self.notes
+            .compactMap { Allergen(note: $0) }
+            .unique
+    }
+
+    public func contains(unwantedIngredients: [Ingredient], unwantedAllergens: [Allergen]) -> Bool {
+        for ingredient in unwantedIngredients {
+            if ingredients.contains(ingredient) {
+                return true
+            }
+        }
+        for allergen in unwantedAllergens {
+            if allergens.contains(allergen) {
+                return true
+            }
+        }
+        return false
+    }
+
+    public var isDinner: Bool {
+        category.lowercased().contains("abend")
+    }
+}
+
+public enum Diet {
+    case vegan
+    case vegetarian
+
+    init?(note: String) {
+        let note = note.lowercased()
+        if note.contains("vegan") {
+            self = .vegan
+        } else if note.contains("vegetarisch") || note.contains("nomeat") {
+            self = .vegetarian
+        } else {
             return nil
         }
-
-        self.id = Meal.idRgx.match(in: urlStr) ?? ""
-
-        self.mensa = mensa
-
-        if let _ = title.range(of: " \\(.*\\)", options: .regularExpression) {
-            let prices = Meal.pricesRgx.matches(in: title)
-                .compactMap(Double.init)
-
-            if prices.count == 1 {
-                self.price = Price(student: prices[0], employee: prices[0])
-            } else if prices.count == 2 {
-                self.price = Price(student: prices[0], employee: prices[1])
-            } else {
-                self.price = nil
-            }
-
-            let titleWithoutPrice = title.replacingOccurrences(of: " \\(.*\\)", with: "", options: .regularExpression)
-            self.name = titleWithoutPrice
-        } else {
-            self.price = nil
-            self.name = title
-        }
-
-        self.url = url
-
-        if let mensaID = Mensa.id(for: self.mensa) {
-            self.imageURL = Meal.imageURL(for: Date(), mensaID: mensaID, mealID: self.id)
-        } else {
-            self.imageURL = nil
-        }
-
-        self.isSoldOut = title.contains("ausverkauft")
     }
+}
 
-    static func imageURL(for date: Date, mensaID: Int, mealID: String) -> URL? {
-        let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date)
-        let month = calendar.component(.month, from: date)
-        return URL(string: "https://bilderspeiseplan.studentenwerk-dresden.de/m\(mensaID)/\(year)\(month)/thumbs/\(mealID).jpg")
+public enum Ingredient: String, CaseIterable, Equatable {
+    case pork
+    case beef
+    case alcohol
+    case garlic
+
+    init?(note: String) {
+        let note = note.lowercased()
+        if note.contains("schweinefleisch") {
+            self = .pork
+        } else if note.contains("rindfleisch") {
+            self = .beef
+        } else if note.contains("alkohol") {
+            self = .alcohol
+        } else if note.contains("knoblauch") {
+            self = .garlic
+        } else {
+            return nil
+        }
+    }
+}
+
+public enum Allergen: String, CaseIterable {
+    case gluten = "A"
+    case shellfish = "B"
+    case eggs = "C"
+    case fish = "D"
+    case peanuts = "E"
+    case soy = "F"
+    case lactose = "G"
+    case nuts = "H"
+    case celery = "I"
+    case mustard = "J"
+    case sesame = "K"
+    case sulfite = "L"
+    case lupin = "M"
+    case molluscs = "N"
+
+    init?(note: String) {
+        let regex = Regex(#"\(([A-Z])\d?\)"#)
+        guard let identifier = regex.firstMatch(in: note)?.captures[0] else {
+            return nil
+        }
+        self.init(rawValue: identifier)
+    }
+}
+
+extension Array where Element: Hashable {
+    fileprivate var unique: Array {
+        var buffer = Array()
+        var added = Set<Element>()
+        for elem in self {
+            if !added.contains(elem) {
+                buffer.append(elem)
+                added.insert(elem)
+            }
+        }
+        return buffer
     }
 }

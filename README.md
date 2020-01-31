@@ -29,7 +29,7 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
 Or get current meal information.
 
 ```swift
-Meal.fetch(forMensa: .alteMensa) { result in
+Meal.for(canteen: .alteMensa, on: Date()) { result in
     guard let meals = result.success else { return }
     
     for meal in meals {
@@ -38,6 +38,17 @@ Meal.fetch(forMensa: .alteMensa) { result in
 }
 ```
 
+Or a list of canteens.
+
+```swift
+Canteen.all { result in
+    guard let canteens = result.success else { return }
+    
+    for canteen in canteens {
+        print(canteen.name)
+    }
+}
+```
 
 
 ## Installation
