@@ -20,7 +20,7 @@ public struct Cardservice {
     ///   - password: Your password
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
-    public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice, EKError>) -> Void) {
+    public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice, CardserviceError>) -> Void) {
         let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: .cardserviceLogin)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -33,7 +33,7 @@ public struct Cardservice {
         """.data(using: .utf8)
         request.httpBody = data
 
-        Network.dataTask(request: request, session: session) { (result: Result<[LoginResponse], EKError>) in
+        Network.dataTask(request: request, session: session) { (result: Result<[LoginResponse], CardserviceError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -53,10 +53,10 @@ public struct Cardservice {
     /// - Parameters:
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
-    public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData], EKError>) -> Void) {
+    public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData], CardserviceError>) -> Void) {
         let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: .cardserviceCarddata)!
         let request = URLRequest(url: url)
-        Network.dataTask(request: request, session: session) { (result: Result<[CardDataService], EKError>) in
+        Network.dataTask(request: request, session: session) { (result: Result<[CardDataService], CardserviceError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -75,7 +75,7 @@ public struct Cardservice {
     ///   - end: end of time interval
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
-    public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction], EKError>) -> Void) {
+    public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction], CardserviceError>) -> Void) {
         // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each other.
 
         let transactionURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
@@ -83,8 +83,8 @@ public struct Cardservice {
         let positionsURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactionPositions)!
         let positionsRequest = URLRequest(url: positionsURL)
 
-        Network.dataTask(request: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService], EKError>) in
-            Network.dataTask(request: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position], EKError>) in
+        Network.dataTask(request: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService], CardserviceError>) in
+            Network.dataTask(request: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position], CardserviceError>) in
                 switch (transactionsResult, positionsResult) {
                 case (.failure(let error), _):
                     completion(.failure(error))

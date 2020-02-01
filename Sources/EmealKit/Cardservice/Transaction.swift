@@ -24,13 +24,13 @@ public struct Transaction: Hashable {
         self.id = service.id
         self.transactionID = service.transactionID
         guard let date = Date(shortGermanDateTime: service.date) else {
-            throw EKError.decoding(.unexpectedDateFormat(service.date))
+            throw CardserviceError.decoding(.unexpectedDateFormat(service.date))
         }
         self.date = date
         self.location = service.location
         self.register = service.register
         guard let kind = Kind(from: service.kind) else {
-            throw EKError.decoding(DecodingError.unknownPaymentType(service.kind))
+            throw CardserviceError.decoding(CardServiceDecodingError.unknownPaymentType(service.kind))
         }
         self.kind = kind
         self.amount = service.amount

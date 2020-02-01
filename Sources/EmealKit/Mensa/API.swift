@@ -4,12 +4,6 @@ import Foundation
 import Combine
 #endif
 
-public enum EmealError: Error {
-    case status(Int)
-    case other(Error)
-    case unknown
-}
-
 private var dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "Y-MM-dd"

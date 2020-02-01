@@ -1,22 +1,14 @@
-//
-//  EKError.swift
-//  StuWeDD
-//
-//  Created by Kilian Költzsch on 15.07.17.
-//  Copyright © 2017 StuWeDD. All rights reserved.
-//
-
 import Foundation
 
-public enum EKError: Error {
+public enum CardserviceError: Error {
     case network(Error?)
     case authentication
     case server(statusCode: Int)
-    case decoding(DecodingError)
+    case decoding(CardServiceDecodingError)
     case feed(error: Error)
 }
 
-extension EKError: LocalizedError {
+extension CardserviceError: LocalizedError {
     var underlyingError: Error? {
         switch self {
         case .network(let error):
@@ -40,13 +32,13 @@ extension EKError: LocalizedError {
     }
 }
 
-public enum DecodingError: Error {
+public enum CardServiceDecodingError: Error {
     case unknownPaymentType(String)
     case unexpectedDateFormat(String)
     case other(Error)
 }
 
-extension DecodingError: LocalizedError {
+extension CardServiceDecodingError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .unknownPaymentType(let paymentType):
