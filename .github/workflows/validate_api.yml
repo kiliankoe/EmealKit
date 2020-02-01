@@ -1,0 +1,13 @@
+name: Validate API Responses
+
+on:
+  schedule:
+    - cron: "0 10 * * 1-5"
+
+jobs:
+  validate_API_responses:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run APITests
+      run: swift test --filter APITests
