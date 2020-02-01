@@ -4,18 +4,11 @@ import Foundation
 import Combine
 #endif
 
-private var dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "Y-MM-dd"
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    return formatter
-}()
-
 internal extension URL {
     static let baseURL = URL(string: "https://api.studentenwerk-dresden.de/openmensa/v2/")!
     static let canteens = URL(string: "canteens/", relativeTo: Self.baseURL)!
     static func meals(canteen: Int, date: Date) -> URL {
-        URL(string: "\(canteen)/days/\(dateFormatter.string(from: date))/meals", relativeTo: Self.canteens)!
+        URL(string: "\(canteen)/days/\(date.yearMonthDay)/meals", relativeTo: Self.canteens)!
     }
 }
 

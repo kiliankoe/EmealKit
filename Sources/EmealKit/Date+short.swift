@@ -22,7 +22,7 @@ extension Date {
     }()
 
     var shortGerman: String {
-        return Date.shortGermanDateFormatter.string(from: self)
+        Self.shortGermanDateFormatter.string(from: self)
     }
 
     init?(shortGermanDateTime str: String) {
@@ -30,5 +30,16 @@ extension Date {
             return nil
         }
         self = date
+    }
+
+    static var yearMonthDayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "Y-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+
+    var yearMonthDay: String {
+        Self.yearMonthDayFormatter.string(from: self)
     }
 }
