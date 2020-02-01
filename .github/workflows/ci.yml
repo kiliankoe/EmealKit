@@ -4,7 +4,11 @@ on: [push]
 
 jobs:
   build_and_test:
-    runs-on: macos-latest
+    name: Build and test on ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: Build
