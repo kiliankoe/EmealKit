@@ -6,6 +6,30 @@ Swift library for accessing some of the data the [Studentenwerk Dresden](http://
 
 ## Quick Start
 
+### Current Meal or Canteen Information
+
+```swift
+Meal.for(canteen: .alteMensa, on: Date()) { result in
+    guard let meals = result.success else { return }
+    
+    for meal in meals {
+        print(meal.name)
+    }
+}
+
+Canteen.all { result in
+    guard let canteens = result.success else { return }
+    
+    for canteen in canteens {
+        print(canteen.name)
+    }
+}
+```
+
+Both of these requests also offer publishers for use with Combine.
+
+### Cardservice
+
 Talk to the [Cardservice](www.studentenwerk-dresden.de/mensen/kartenservice/) to acquire data about your Emeal card. You will need to have registered for Autoload to have the necessary authentication details.
 
 ```swift
@@ -22,30 +46,6 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
     service.transactions(begin: twoDaysAgo, end: now) { result in
         guard let transactions = result.success else { return }
         print(transactions)
-    }
-}
-```
-
-Or get current meal information.
-
-```swift
-Meal.for(canteen: .alteMensa, on: Date()) { result in
-    guard let meals = result.success else { return }
-    
-    for meal in meals {
-        print(meal.name)
-    }
-}
-```
-
-Or a list of canteens.
-
-```swift
-Canteen.all { result in
-    guard let canteens = result.success else { return }
-    
-    for canteen in canteens {
-        print(canteen.name)
     }
 }
 ```
