@@ -53,7 +53,7 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
 
 ## Installation
 
-StuWeDD is available through Swift Package Manager.
+EmealKit is available through Swift Package Manager.
 
 ```swift
 .package(url: "https://github.com/kiliankoe/EmealKit.git", from: "<#latest#>")
