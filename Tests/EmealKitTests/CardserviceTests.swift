@@ -1,3 +1,4 @@
+#if !os(watchOS)
 import Foundation
 import XCTest
 import EmealKit
@@ -31,3 +32,4 @@ class CardserviceTests: XCTestCase {
         ("testLogin", testLogin)
     ]
 }
+#endif

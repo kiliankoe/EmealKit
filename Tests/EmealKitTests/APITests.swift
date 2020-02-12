@@ -1,3 +1,4 @@
+#if !os(watchOS)
 import XCTest
 import EmealKit
 
@@ -54,3 +55,4 @@ class APITests: XCTestCase {
         waitForExpectations(timeout: 10)
     }
 }
+#endif

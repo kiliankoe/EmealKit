@@ -1,3 +1,4 @@
+#if !os(watchOS)
 import XCTest
 import EmealKit
 import CoreLocation
@@ -29,3 +30,4 @@ class CanteenTests: XCTestCase {
         XCTAssertEqual(alteMensa.location?.coordinate.longitude, 13.724)
     }
 }
+#endif

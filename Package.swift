@@ -23,8 +23,13 @@ let package = Package(
         .target(
             name: "EmealKit",
             dependencies: ["HTMLString", "Regex"]),
-        .testTarget(
-            name: "EmealKitTests",
-            dependencies: ["EmealKit"]),
     ]
 )
+
+#if !os(watchOS)
+package.targets.append(
+    .testTarget(
+        name: "EmealKitTests",
+        dependencies: ["EmealKit"])
+)
+#endif
