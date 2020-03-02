@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 internal class MockURLSession: URLSession {
     var mockData: Data?

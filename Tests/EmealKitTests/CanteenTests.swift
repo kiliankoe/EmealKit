@@ -1,6 +1,5 @@
 import XCTest
 import EmealKit
-import CoreLocation
 
 class CanteenTests: XCTestCase {
     func testFetch() {
