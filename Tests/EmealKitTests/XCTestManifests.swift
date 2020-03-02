@@ -17,7 +17,6 @@ extension CanteenTests {
     // to regenerate.
     static let __allTests__CanteenTests = [
         ("testFetch", testFetch),
-        ("testLocation", testLocation),
     ]
 }
 
