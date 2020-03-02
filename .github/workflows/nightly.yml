@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - "swift:nightly-5.2",
+          - "swift:nightly-5.2"
           - "swift:nightly"
     name: Linux
     runs-on: ubuntu-latest
