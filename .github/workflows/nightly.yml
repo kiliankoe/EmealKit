@@ -17,11 +17,11 @@ jobs:
     container:
       image: swiftlang/${{ matrix.image }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Version
-        run: swift --version
-      - name: Build
-        run: swift build -v -c debug
-      - name: Test
-        run: swift test -v -c debug
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Version
+      run: swift --version
+    - name: Build
+      run: swift build -v -c debug
+    - name: Test
+      run: swift test -v -c debug
