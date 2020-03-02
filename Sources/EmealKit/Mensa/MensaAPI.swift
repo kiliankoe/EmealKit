@@ -5,10 +5,12 @@ import Combine
 #endif
 
 internal extension URL {
-    static let baseURL = URL(string: "https://api.studentenwerk-dresden.de/openmensa/v2/")!
-    static let canteens = URL(string: "canteens/", relativeTo: Self.baseURL)!
-    static func meals(canteen: Int, date: Date) -> URL {
-        URL(string: "\(canteen)/days/\(date.yearMonthDay)/meals", relativeTo: Self.canteens)!
+    enum Mensa {
+        static let baseUrl = URL(string: "https://api.studentenwerk-dresden.de/openmensa/v2/")!
+        static let canteens = URL(string: "canteens/", relativeTo: Self.baseUrl)!
+        static func meals(canteen: Int, date: Date) -> URL {
+            URL(string: "\(canteen)/days/\(date.yearMonthDay)/meals", relativeTo: Self.canteens)!
+        }
     }
 }
 
@@ -36,7 +38,7 @@ extension URLSession {
 extension Canteen {
     public static func all(session: URLSession = .shared,
                            completion: @escaping (Result<[Canteen], EmealError>) -> Void) {
-        session.emealDataTask(with: .canteens) { result in
+        session.emealDataTask(with: URL.Mensa.canteens) { result in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -55,7 +57,7 @@ extension Canteen {
 #if canImport(Combine)
 extension Canteen {
     public static func allPublisher(session: URLSession = .shared) -> AnyPublisher<[Canteen], EmealError> {
-        session.dataTaskPublisher(for: .canteens)
+        session.dataTaskPublisher(for: URL.Mensa.canteens)
             .map { $0.data }
             .decode(type: [Canteen].self, decoder: JSONDecoder())
             .mapError { EmealError.other($0) }
@@ -79,7 +81,7 @@ extension Meal {
                              on date: Date,
                              session: URLSession = .shared,
                              completion: @escaping (Result<[Meal], EmealError>) -> Void) {
-        session.emealDataTask(with: .meals(canteen: canteen, date: date)) { result in
+        session.emealDataTask(with: URL.Mensa.meals(canteen: canteen, date: date)) { result in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -100,7 +102,7 @@ extension Meal {
     public static func publisherFor(canteen: Int,
                                     on date: Date,
                                     session: URLSession = .shared) -> AnyPublisher<[Meal], EmealError> {
-        session.dataTaskPublisher(for: .meals(canteen: canteen, date: date))
+        session.dataTaskPublisher(for: URL.Mensa.meals(canteen: canteen, date: date))
             .map { $0.data }
             .decode(type: [Meal].self, decoder: JSONDecoder())
             .mapError { EmealError.other($0) }

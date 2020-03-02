@@ -21,7 +21,7 @@ public struct Cardservice {
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
     public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice, CardserviceError>) -> Void) {
-        let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: .cardserviceLogin)!
+        let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: URL.Cardervice.login)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -33,7 +33,7 @@ public struct Cardservice {
         """.data(using: .utf8)
         request.httpBody = data
 
-        Network.dataTask(request: request, session: session) { (result: Result<[LoginResponse], CardserviceError>) in
+        session.cardserviceDataTask(with: request, session: session) { (result: Result<[LoginResponse], CardserviceError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -54,9 +54,9 @@ public struct Cardservice {
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
     public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData], CardserviceError>) -> Void) {
-        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: .cardserviceCarddata)!
+        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: URL.Cardervice.carddata)!
         let request = URLRequest(url: url)
-        Network.dataTask(request: request, session: session) { (result: Result<[CardDataService], CardserviceError>) in
+        session.cardserviceDataTask(with: request, session: session) { (result: Result<[CardDataService], CardserviceError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
@@ -78,13 +78,17 @@ public struct Cardservice {
     public func transactions(begin: Date, end: Date, session: URLSession = .shared, completion: @escaping (Result<[Transaction], CardserviceError>) -> Void) {
         // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each other.
 
-        let transactionURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactions)!
+        let transactionURL = URL(
+            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
+            relativeTo: URL.Cardervice.transactions)!
         let transactionRequest = URLRequest(url: transactionURL)
-        let positionsURL = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)", relativeTo: .cardserviceTransactionPositions)!
+        let positionsURL = URL(
+            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
+            relativeTo: URL.Cardervice.transactionPositions)!
         let positionsRequest = URLRequest(url: positionsURL)
 
-        Network.dataTask(request: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService], CardserviceError>) in
-            Network.dataTask(request: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position], CardserviceError>) in
+        session.cardserviceDataTask(with: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService], CardserviceError>) in
+            session.cardserviceDataTask(with: positionsRequest, session: session) { (positionsResult: Result<[Transaction.Position], CardserviceError>) in
                 switch (transactionsResult, positionsResult) {
                 case (.failure(let error), _):
                     completion(.failure(error))

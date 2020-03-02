@@ -1,39 +1,26 @@
 import Foundation
 
-extension URL {
-    static var cardservice: URL {
-        return URL(string: "https://kartenservicedaten.studentenwerk-dresden.de:8080/")!
-    }
-
-    static var cardserviceAPIBase: URL {
-        return URL(string: "TL1/TLM/KASVC/", relativeTo: URL.cardservice)!
-    }
-
-    static var cardserviceLogin: URL {
-        return URL(string: "LOGIN", relativeTo: URL.cardserviceAPIBase)!
-    }
-
-    static var cardserviceCarddata: URL {
-        return URL(string: "KARTE", relativeTo: URL.cardserviceAPIBase)!
-    }
-
-    static var cardserviceTransactions: URL {
-        return URL(string: "TRANS", relativeTo: URL.cardserviceAPIBase)!
-    }
-
-    static var cardserviceTransactionPositions: URL {
-        return URL(string: "TRANSPOS", relativeTo: URL.cardserviceAPIBase)!
+internal extension URL {
+    enum Cardervice {
+        static let baseUrl = URL(string: "https://kartenservicedaten.studentenwerk-dresden.de:8080/")!
+        static let apiBase = URL(string: "TL1/TLM/KASVC/", relativeTo: Self.baseUrl)!
+        static let login = URL(string: "LOGIN", relativeTo: Self.apiBase)!
+        static let carddata = URL(string: "KARTE", relativeTo: Self.apiBase)!
+        static let transactions = URL(string: "TRANS", relativeTo: Self.apiBase)!
+        static let transactionPositions = URL(string: "TRANSPOS", relativeTo: Self.apiBase)!
     }
 }
 
-enum Network {
-    static func dataTask<T: Decodable>(request: URLRequest, session: URLSession, completion: @escaping (Result<T, CardserviceError>) -> Void) {
+internal extension URLSession {
+    func cardserviceDataTask<T: Decodable>(with request: URLRequest,
+                                           session: URLSession,
+                                           completion: @escaping (Result<T, CardserviceError>) -> Void) {
         var request = request
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("Basic S0FTVkM6ekt2NXlFMUxaVW12VzI5SQ==", forHTTPHeaderField: "Authorization") // this is hardcoded in dataprovider.js
         request.setValue("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
 
-        session.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: request) { data, response, error in
             guard error == nil else {
                 completion(.failure(.network(error)))
                 return
@@ -60,6 +47,8 @@ enum Network {
                 return
             }
 
-        }.resume()
+        }
+
+        task.resume()
     }
 }
