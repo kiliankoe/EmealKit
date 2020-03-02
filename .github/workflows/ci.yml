@@ -1,20 +1,38 @@
 name: CI
 
-on: [push]
+on:
+  - push
 
 jobs:
-  build_and_test:
-    name: Build and test on ${{ matrix.os }}
+  linux:
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        swift: ["5.1.0"]
-    runs-on: ${{ matrix.os }}
+        image:
+          - "swift:5.1"
+      name: Linux
+      runs-on: ubuntu-latest
+      container:
+        image: ${{ matrix.image }}
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        - name: Version
+          uses: swift --version
+        - name: Build
+          uses: swift build -v -c debug
+        - name: Test
+          uses: swift test -v -c debug
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
     steps:
-    - uses: fwal/setup-swift@master
-      with:
-        swift-version: ${{ matrix.swift }}
-    - name: Build
-      run: swift build -v
-    - name: Tests
-      run: swift test -v
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Version
+        uses: swift --version
+      - name: Build
+        uses: swift build -v -c debug
+      - name: Test
+        uses: swift test -v -c debug
