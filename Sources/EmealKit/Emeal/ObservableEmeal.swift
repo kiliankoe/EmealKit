@@ -1,3 +1,4 @@
+#if canImport(CoreNFC)
 #if canImport(Combine)
 import Combine
 
@@ -28,4 +29,5 @@ public class ObservableEmeal: ObservableObject, EmealDelegate {
         emeal.beginNFCSession()
     }
 }
+#endif
 #endif
