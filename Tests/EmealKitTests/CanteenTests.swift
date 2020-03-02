@@ -13,6 +13,7 @@ class CanteenTests: XCTestCase {
         waitForExpectations(timeout: 1)
     }
 
+    #if canImport(CoreLocation)
     func testLocation() {
         let noCoordinates = Canteen(id: 0, name: "", city: "", address: "",
                                     coordinates: [], url: URL(string: "q")!, menu: URL(string: "q")!)
@@ -27,4 +28,5 @@ class CanteenTests: XCTestCase {
         XCTAssertEqual(alteMensa.location?.coordinate.latitude, 51.026)
         XCTAssertEqual(alteMensa.location?.coordinate.longitude, 13.724)
     }
+    #endif
 }
