@@ -1,6 +1,8 @@
 import XCTest
-@testable import StuWeDDTests
 
-XCTMain([
-    testCase(CardserviceTests.allTests)
-])
+import EmealKitTests
+
+var tests = [XCTestCaseEntry]()
+tests += EmealKitTests.__allTests()
+
+XCTMain(tests)
