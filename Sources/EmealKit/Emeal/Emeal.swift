@@ -29,7 +29,9 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
         readerSession = nil
-        delegate?.invalidate(with: error)
+        DispatchQueue.main.async {
+            delegate?.invalidate(with: error)
+        }
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
