@@ -1,6 +1,6 @@
-# 🎓 EmealKit
+# 🌯 EmealKit
 
-Swift library for accessing some of the data the [Studentenwerk Dresden](http://www.studentenwerk-dresden.de/) has to offer.
+Swift library for accessing some of the meal related data the [Studentenwerk Dresden](http://www.studentenwerk-dresden.de/) has to offer.
 
 
 
@@ -49,6 +49,34 @@ Cardservice.login(username: "1234567890", password: "hunter2") { result in
     }
 }
 ```
+
+### NFC Scanning
+
+EmealKit also handles scanning the Emeal card via NFC if your device supports it. Just create an `Emeal` object, conform to `EmealDelegate` and call `beginNFCSession`.
+
+```swift
+class YourEmealHandler: EmealDelegate {
+    let emeal: Emeal
+  
+    init() {
+        let strings = LocalizedEmealStrings(/*...*/)
+        emeal = Emeal(localizedStrings: strings)
+        emeal.delegate = self
+        
+        // Call this to start the NFC session.
+        emeal.beginNFCSession()
+    }
+  
+    func readData(currentBalance: Double, lastTransaction: Double) {
+        // Gets called on a successful scan.
+    }
+  
+    func invalidate(with error: Error) {
+        // Called on errors.
+    }
+}
+```
+
 
 
 ## Installation
