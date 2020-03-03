@@ -3,8 +3,8 @@
 import Combine
 
 public class ObservableEmeal: ObservableObject, EmealDelegate {
-    @Published var currentBalance: Double?
-    @Published var lastTransaction: Double?
+    @Published public var currentBalance: Double?
+    @Published public var lastTransaction: Double?
 
     public func readData(currentBalance: Double, lastTransaction: Double) {
         self.currentBalance = currentBalance
