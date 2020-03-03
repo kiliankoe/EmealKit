@@ -2,6 +2,8 @@
 import Foundation
 import CoreNFC
 
+// Huge thanks to Georg Sieber for a reference implementation of this at https://github.com/schorschii/MensaGuthaben-iOS
+
 public class Emeal: NSObject, NFCTagReaderSessionDelegate {
     private static var APP_ID: Int = 0x5F8415
     private static var FILE_ID: UInt8 = 1
