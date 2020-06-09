@@ -2,32 +2,10 @@ import XCTest
 import EmealKit
 
 class APITests: XCTestCase {
-    func testMealData() {
-        let e = expectation(description: "get current meal data")
+    static let expectedCanteenCount = 21
 
-        var date = Date()
-        if Calendar(identifier: .gregorian).isDateInWeekend(date) {
-            print("Moving meal validation date into the next week to skip the weekend.")
-            date.addTimeInterval(3 * 24 * 3600)
-        }
-
-        Meal.for(canteen: .alteMensa, on: date) { result in
-            defer { e.fulfill() }
-
-            guard let meals = try? result.get() else {
-                XCTFail("Invalid response")
-                return
-            }
-
-            if meals.isEmpty {
-                XCTFail("No meals found at Alte Mensa (4).")
-            } else {
-                print("Found \(meals.count) meals at Alte Mensa (4) on \(date).")
-            }
-        }
-
-        waitForExpectations(timeout: 10)
-    }
+    /// Tests expect one of the following canteens to be have meals for the current day, otherwise they fail.
+    static let expectedOpenCanteens: [CanteenId] = [.alteMensa, .mensaSiedepunkt, .mensaReichenbachstraße]
 
     func testCanteenData() {
         let e = expectation(description: "get current canteen data")
@@ -49,8 +27,47 @@ class APITests: XCTestCase {
                 .map { "\($0.id) \($0.name)" }
                 .joined(separator: "\n- ")
             print("Found the following \(canteens.count) canteens: \n- \(canteensList)")
+
+            XCTAssertEqual(canteens.count, Self.expectedCanteenCount)
         }
 
         waitForExpectations(timeout: 10)
+    }
+
+    func testMealData() {
+        let e = expectation(description: "get current meal data")
+
+        let date = Date()
+
+        var foundMeals = false
+
+        for canteen in Self.expectedOpenCanteens {
+            let semaphore = DispatchSemaphore(value: 0)
+
+            Meal.for(canteen: canteen, on: date) { result in
+                defer { semaphore.signal() }
+
+                guard let meals = try? result.get() else {
+                    XCTFail("Invalid response: \(result)")
+                    return
+                }
+
+                if !meals.isEmpty {
+                    foundMeals = true
+                    print("Found \(meals.count) meals at \(canteen) on \(date).")
+                }
+            }
+
+            semaphore.wait()
+
+            if foundMeals {
+                break
+            }
+        }
+
+        XCTAssert(foundMeals, "No meals found at these canteens: \(Self.expectedOpenCanteens)")
+        e.fulfill()
+
+        waitForExpectations(timeout: 20)
     }
 }
