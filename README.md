@@ -86,3 +86,12 @@ EmealKit is available through Swift Package Manager.
 ```swift
 .package(url: "https://github.com/kiliankoe/EmealKit.git", from: "<#latest#>")
 ```
+
+
+## Used by
+
+This library is currently being used in the following applications:
+
+- [Mensa Dresden](https://github.com/kiliankoe/MensaDresden)
+
+Know of any others? Please open a PR! 😊
