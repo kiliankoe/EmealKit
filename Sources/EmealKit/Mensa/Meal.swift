@@ -50,7 +50,13 @@ public struct Meal: Identifiable, Decodable {
         }
 
         self.category = try container.decode(String.self, forKey: .category)
-        self.image = try container.decode(URL.self, forKey: .image)
+
+        var imageURLString = try container.decode(String.self, forKey: .image)
+        if imageURLString.hasPrefix("//") {
+            imageURLString = "https:" + imageURLString
+        }
+        self.image = URL(string: imageURLString) ?? Meal.placeholderImageURL
+
         self.url = try container.decode(URL.self, forKey: .url)
     }
 
@@ -69,7 +75,7 @@ public struct Meal: Identifiable, Decodable {
     }
 
     public var imageIsPlaceholder: Bool {
-        image == Self.placeholderImageURL
+        image.absoluteString.hasSuffix("studentenwerk-dresden-lieber-mensen-gehen.jpg")
     }
 
     public var diet: [Diet] {
