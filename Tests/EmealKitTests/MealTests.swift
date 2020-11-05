@@ -60,5 +60,27 @@ class MealTests: XCTestCase {
                           image: URL(string: "q")!, url: URL(string: "q")!)
         XCTAssert(dinner.isDinner)
     }
+
+    func testDecodePrices() throws {
+        let expectedPricesJson = """
+        {
+            "Studierende": 1.0,
+            "Bedienstete": 1.0
+        }
+        """.data(using: .utf8)!
+        let prices1 = try JSONDecoder().decode(Meal.Prices.self, from: expectedPricesJson)
+        XCTAssertEqual(prices1.students, 1.0)
+        XCTAssertEqual(prices1.employees, 1.0)
+
+        let extraColonPrices = """
+        {
+            "Studierende:": 1.0,
+            "Bedienstete:": 1.0
+        }
+        """.data(using: .utf8)!
+        let prices2 = try JSONDecoder().decode(Meal.Prices.self, from: extraColonPrices)
+        XCTAssertEqual(prices2.students, 1.0)
+        XCTAssertEqual(prices2.employees, 1.0)
+    }
 }
 

@@ -28,6 +28,29 @@ public struct Meal: Identifiable, Decodable {
         private enum CodingKeys: String, CodingKey {
             case students = "Studierende"
             case employees = "Bedienstete"
+
+            // Apparently it can happen that a single canteen (in this case Mensa Johannstadt) has malformed pricing
+            // keys. I'm guessing the system behind this is super janky and probably built on aggregated data formatted
+            // by each canteen. I wouldn't want to support decoding completely random data, but depending on if this can
+            // be fixed in the server API, making this colon-proof kinda makes sense. It's a symbol that makes sense as
+            // a separator in the ingested data, so it might occur again.
+            case colonStudents = "Studierende:"
+            case colonEmployees = "Bedienstete:"
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let expectedStudentsValue = try? container.decodeIfPresent(Double.self, forKey: .students)
+            let expectedEmployeesValue = try? container.decodeIfPresent(Double.self, forKey: .employees)
+
+            if let esv = expectedStudentsValue, let eev = expectedEmployeesValue {
+                self.students = esv
+                self.employees = eev
+                return
+            }
+
+            self.students = try container.decode(Double.self, forKey: .colonStudents)
+            self.employees = try container.decode(Double.self, forKey: .colonEmployees)
         }
 
         public init(students: Double, employees: Double) {
