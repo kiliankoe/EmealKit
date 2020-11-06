@@ -17,6 +17,7 @@ extension Date {
 
     static var shortGermanDateTimeFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "dd.MM.yyyy HH:mm"
         return formatter
     }()
