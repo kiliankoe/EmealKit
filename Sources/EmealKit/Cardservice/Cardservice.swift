@@ -21,7 +21,7 @@ public struct Cardservice {
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
     public static func login(username: String, password: String, session: URLSession = .shared, completion: @escaping (Result<Cardservice, CardserviceError>) -> Void) {
-        let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: URL.Cardervice.login)!
+        let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON", relativeTo: URL.Cardservice.login)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -54,7 +54,7 @@ public struct Cardservice {
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
     public func carddata(session: URLSession = .shared, completion: @escaping (Result<[CardData], CardserviceError>) -> Void) {
-        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: URL.Cardervice.carddata)!
+        let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)", relativeTo: URL.Cardservice.carddata)!
         let request = URLRequest(url: url)
         session.cardserviceDataTask(with: request, session: session) { (result: Result<[CardDataService], CardserviceError>) in
             switch result {
@@ -80,11 +80,11 @@ public struct Cardservice {
 
         let transactionURL = URL(
             string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
-            relativeTo: URL.Cardervice.transactions)!
+            relativeTo: URL.Cardservice.transactions)!
         let transactionRequest = URLRequest(url: transactionURL)
         let positionsURL = URL(
             string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
-            relativeTo: URL.Cardervice.transactionPositions)!
+            relativeTo: URL.Cardservice.transactionPositions)!
         let positionsRequest = URLRequest(url: positionsURL)
 
         session.cardserviceDataTask(with: transactionRequest, session: session) { (transactionsResult: Result<[TransactionService], CardserviceError>) in

@@ -1,7 +1,7 @@
 import Foundation
 
 internal extension URL {
-    enum Cardervice {
+    enum Cardservice {
         static let baseUrl = URL(string: "https://kartenservicedaten.studentenwerk-dresden.de:8080/")!
         static let apiBase = URL(string: "TL1/TLM/KASVC/", relativeTo: Self.baseUrl)!
         static let login = URL(string: "LOGIN", relativeTo: Self.apiBase)!
