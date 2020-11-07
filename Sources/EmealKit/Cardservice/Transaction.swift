@@ -23,7 +23,7 @@ public struct Transaction: Hashable {
         self.clientID = service.clientID
         self.id = service.id
         self.transactionID = service.transactionID
-        guard let date = Date(shortGermanDateTime: service.date) else {
+        guard let date = Date(dayMonthYearHourMinute: service.date) else {
             throw CardserviceError.decoding(.unexpectedDateFormat(service.date))
         }
         self.date = date
@@ -156,7 +156,7 @@ extension Transaction: Comparable {
 
 extension Transaction: CustomStringConvertible {
     public var description: String {
-        return "\(self.date.shortGerman): \(self.location) \(self.amount.euroString)"
+        return "\(self.date.dayMonthYear): \(self.location) \(self.amount.euroString)"
     }
 }
 

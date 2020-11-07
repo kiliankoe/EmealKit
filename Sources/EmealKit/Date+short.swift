@@ -9,36 +9,37 @@
 import Foundation
 
 extension Date {
-    static var shortGermanDateFormatter: DateFormatter = {
+    static var dayMonthYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy"
-        return formatter
-    }()
-
-    static var shortGermanDateTimeFormatter: DateFormatter = {
-        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.y"
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "dd.MM.yyyy HH:mm"
         return formatter
     }()
 
-    var shortGerman: String {
-        Self.shortGermanDateFormatter.string(from: self)
-    }
+    static var dayMonthYearHourMinute: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.y HH:mm"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
 
-    init?(shortGermanDateTime str: String) {
-        guard let date = Date.shortGermanDateTimeFormatter.date(from: str) else {
+    static var yearMonthDayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "y-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+
+    init?(dayMonthYearHourMinute str: String) {
+        guard let date = Date.dayMonthYearHourMinute.date(from: str) else {
             return nil
         }
         self = date
     }
 
-    static var yearMonthDayFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "Y-MM-dd"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter
-    }()
+    var dayMonthYear: String {
+        Self.dayMonthYearFormatter.string(from: self)
+    }
 
     var yearMonthDay: String {
         Self.yearMonthDayFormatter.string(from: self)

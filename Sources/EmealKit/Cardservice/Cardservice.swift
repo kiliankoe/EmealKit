@@ -79,11 +79,11 @@ public struct Cardservice {
         // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each other.
 
         let transactionURL = URL(
-            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
+            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(end.dayMonthYear)",
             relativeTo: URL.Cardservice.transactions)!
         let transactionRequest = URLRequest(url: transactionURL)
         let positionsURL = URL(
-            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.shortGerman)&datumBis=\(end.shortGerman)",
+            string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(end.dayMonthYear)",
             relativeTo: URL.Cardservice.transactionPositions)!
         let positionsRequest = URLRequest(url: positionsURL)
 
