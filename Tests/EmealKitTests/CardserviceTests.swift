@@ -3,7 +3,7 @@ import XCTest
 import EmealKit
 
 class CardserviceTests: XCTestCase {
-    func testLogin() {
+    func testLoginFailure() {
         let e = expectation(description: "Authenticate unsuccessfully with weird status code")
         Cardservice.login(username: "", password: "") { result in
             switch result {
@@ -26,8 +26,4 @@ class CardserviceTests: XCTestCase {
 
         waitForExpectations(timeout: 5)
     }
-
-    static var allTests = [
-        ("testLogin", testLogin)
-    ]
 }
