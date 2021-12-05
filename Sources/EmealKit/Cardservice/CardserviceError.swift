@@ -2,6 +2,7 @@ import Foundation
 
 public enum CardserviceError: Error {
     case network(Error?)
+    case invalidURL
     case authentication
     case server(statusCode: Int)
     case decoding(CardServiceDecodingError)
@@ -13,6 +14,8 @@ extension CardserviceError: LocalizedError {
         switch self {
         case .network(let error):
             return error
+        case .invalidURL:
+            return nil
         case .authentication:
             return nil
         case .server:
