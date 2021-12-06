@@ -13,10 +13,10 @@ public struct Cardservice {
     let cardnumber: String
     let authToken: String
 
-    /// Authenticate against the webservice.
+    /// Authenticate against the Cardservice.
     ///
     /// - Parameters:
-    ///   - username: Your username, probably your card number
+    ///   - username: Your username, probably your Emeal card number
     ///   - password: Your password
     ///   - session: URLSession, defaults to .shared
     ///   - completion: handler
@@ -51,6 +51,21 @@ public struct Cardservice {
         }
     }
 
+    /// Authenticate against the Cardservice.
+    /// - Parameters:
+    ///   - username: Your username, probably your Emeal card number
+    ///   - password: Your password
+    ///   - session: URLSession, defaults to .shared
+    /// - Returns: An authenticated `Cardservice`.
+    @available(macOS 12.0, iOS 15.0, *)
+    public static func login(username: String, password: String, session: URLSession = .shared) async throws -> Cardservice {
+        try await withCheckedThrowingContinuation { continuation in
+            self.login(username: username, password: password, session: session) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+
     /// Fetch card data associated with an account.
     ///
     /// - Parameters:
@@ -69,6 +84,18 @@ public struct Cardservice {
             case .success(let servicedata):
                 let carddata = servicedata.map { CardData(from: $0) }
                 completion(.success(carddata))
+            }
+        }
+    }
+
+    /// Fetch card data associated with an account.
+    /// - Parameter session: URLSession, default to .shared
+    /// - Returns: An list of associated card data objects.
+    @available(macOS 12.0, iOS 15.0, *)
+    public func carddata(session: URLSession = .shared) async throws -> [CardData] {
+        try await withCheckedThrowingContinuation { continuation in
+            self.carddata(session: session) { result in
+                continuation.resume(with: result)
             }
         }
     }
@@ -117,6 +144,21 @@ public struct Cardservice {
                         completion(.failure(.decoding(.other(error))))
                     }
                 }
+            }
+        }
+    }
+
+    /// Fetch all transactions that occurred in a specific time interval.
+    /// - Parameters:
+    ///   - begin: start of time interval
+    ///   - end: end of time interval
+    ///   - session: URLSession, defaults to .shared
+    /// - Returns: A list of transactions
+    @available(macOS 12.0, iOS 15.0, *)
+    public func transactions(begin: Date, end: Date, session: URLSession = .shared) async throws -> [Transaction] {
+        try await withCheckedThrowingContinuation { continuation in
+            self.transactions(begin: begin, end: end, session: session) { result in
+                continuation.resume(with: result)
             }
         }
     }
