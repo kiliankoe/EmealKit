@@ -6,7 +6,6 @@ public enum CardserviceError: Error {
     case authentication
     case server(statusCode: Int)
     case decoding(CardServiceDecodingError)
-    case feed(error: Error)
 }
 
 extension CardserviceError: LocalizedError {
@@ -21,8 +20,6 @@ extension CardserviceError: LocalizedError {
         case .server:
             return nil
         case .decoding(let error):
-            return error
-        case .feed(error: let error):
             return error
         }
     }
