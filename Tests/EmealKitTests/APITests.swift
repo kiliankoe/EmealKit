@@ -4,7 +4,7 @@ import EmealKit
 class APITests: XCTestCase {
     static let expectedCanteenCount = 21
 
-    /// Tests expect one of the following canteens to be have meals for the current day, otherwise they fail.
+    /// Tests expect one of the following canteens to have meals for the current day, otherwise they fail.
     static let expectedOpenCanteens: [CanteenId] = [.alteMensa, .mensaSiedepunkt, .mensaReichenbachstraße]
 
     func testCanteenData() {
