@@ -23,35 +23,23 @@ class CardserviceTests: XCTestCase {
         }
     }
 
-    func testLoginSuccess() async {
+    func testLoginSuccess() async throws {
         Thread.sleep(forTimeInterval: 0.5)
-        do {
-            _ = try await Cardservice.login(username: username, password: password)
-        } catch {
-            XCTFail("Login should not fail. \(error)")
-        }
+        _ = try await Cardservice.login(username: username, password: password)
     }
 
-    func testFetchCarddata() async {
+    func testFetchCarddata() async throws {
         Thread.sleep(forTimeInterval: 0.5)
-        do {
-            let cardservice = try await Cardservice.login(username: username, password: password)
-            let carddata = try await cardservice.carddata()
-            XCTAssert(!carddata.isEmpty)
-        } catch {
-            XCTFail("Fetching carddata should not fail. \(error)")
-        }
+        let cardservice = try await Cardservice.login(username: username, password: password)
+        let carddata = try await cardservice.carddata()
+        XCTAssert(!carddata.isEmpty)
     }
 
-    func testFetchTransactions() async {
+    func testFetchTransactions() async throws {
         Thread.sleep(forTimeInterval: 0.5)
-        do {
-            let cardservice = try await Cardservice.login(username: username, password: password)
-            let oneWeekAgo = Date().addingTimeInterval(-1 * 60 * 60 * 24 * 7)
-            _ = try await cardservice.transactions(begin: oneWeekAgo)
-            // Can't really assert anything here, the list of transactions is likely empty, but at least it didn't fail.
-        } catch {
-            XCTFail("Fetching transactions should not fail. \(error)")
-        }
+        let cardservice = try await Cardservice.login(username: username, password: password)
+        let oneWeekAgo = Date().addingTimeInterval(-1 * 60 * 60 * 24 * 7)
+        _ = try await cardservice.transactions(begin: oneWeekAgo)
+        // Can't really assert anything here, the list of transactions is likely empty, but at least it didn't fail.
     }
 }
