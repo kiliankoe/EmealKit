@@ -2,7 +2,7 @@ import XCTest
 import EmealKit
 
 @available(macOS 12.0, iOS 15.0, *)
-class APITests: XCTestCase {
+class MenuAPITests: XCTestCase {
     static let expectedCanteenCount = 21
 
     /// Tests expect one of the following canteens to have meals for the current day, otherwise they fail.

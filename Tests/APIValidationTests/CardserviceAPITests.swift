@@ -3,7 +3,7 @@ import XCTest
 import EmealKit
 
 @available(macOS 12.0, iOS 15.0, *)
-class CardserviceTests: XCTestCase {
+class CardserviceAPITests: XCTestCase {
     lazy var username: String = ProcessInfo.processInfo.environment["EMEAL_USERNAME"]!
     lazy var password: String = ProcessInfo.processInfo.environment["EMEAL_PASSWORD"]!
 
