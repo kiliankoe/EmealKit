@@ -4,7 +4,7 @@ import Foundation
 import CoreLocation
 #endif
 
-public struct Canteen: Identifiable, Decodable {
+public struct Canteen: Identifiable, Equatable, Decodable {
     public var id: Int
     public var name: String
     public var city: String

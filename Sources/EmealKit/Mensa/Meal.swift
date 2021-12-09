@@ -2,7 +2,7 @@ import Foundation
 import HTMLString
 import Regex
 
-public struct Meal: Identifiable, Decodable {
+public struct Meal: Identifiable, Equatable, Decodable {
     public var id: Int
     public var name: String
     public var notes: [String]
@@ -21,7 +21,7 @@ public struct Meal: Identifiable, Decodable {
         case url
     }
 
-    public struct Prices: Decodable {
+    public struct Prices: Equatable, Decodable {
         public var students: Double
         public var employees: Double
 
