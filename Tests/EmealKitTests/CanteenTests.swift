@@ -3,15 +3,10 @@ import EmealKit
 import CoreLocation
 
 class CanteenTests: XCTestCase {
-    func testFetch() {
-        let e = expectation(description: "fetch canteen data")
-
-        Canteen.all(session: MockURLSession(mockData: .canteens)) { result in
-            defer { e.fulfill() }
-            XCTAssertNotNil(try? result.get(), "Expected canteen data")
-        }
-
-        waitForExpectations(timeout: 1)
+    @available(macOS 12.0, iOS 15.0, *)
+    func testMockFetchAndDecode() async throws {
+        let canteens = try await Canteen.all(session: MockURLSession(mockData: .canteens))
+        XCTAssertEqual(canteens.count, 21)
     }
 
     func testLocation() {

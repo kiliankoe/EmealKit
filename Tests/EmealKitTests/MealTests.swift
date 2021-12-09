@@ -2,14 +2,10 @@ import XCTest
 import EmealKit
 
 class MealTests: XCTestCase {
-    func testFetch() {
-        let e = expectation(description: "fetch meal data")
-        Meal.for(canteen: .alteMensa, on: Date(), session: MockURLSession(mockData: .meals)) { result in
-            defer { e.fulfill() }
-            XCTAssertNotNil(try? result.get(), "Expected meal data")
-        }
-
-        waitForExpectations(timeout: 1)
+    @available(macOS 12.0, iOS 15.0, *)
+    func testMockFetchAndDecode() async throws {
+        let meals = try await Meal.for(canteen: .alteMensa, on: Date(), session: MockURLSession(mockData: .meals))
+        XCTAssertEqual(meals.count, 5)
     }
 
     func testPlaceholderImage() {
