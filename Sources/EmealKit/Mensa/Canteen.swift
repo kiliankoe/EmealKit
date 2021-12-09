@@ -14,13 +14,9 @@ public struct Canteen: Identifiable, Decodable {
     public var menu: URL
 
     #if canImport(CoreLocation)
-    public var coordinate: CLLocationCoordinate2D? {
-        guard self.coordinates.count == 2 else { return nil }
-        return CLLocationCoordinate2D(latitude: coordinates[0], longitude: coordinates[1])
-    }
-
     public var location: CLLocation? {
-        guard let coordinate = self.coordinate else { return nil }
+        guard self.coordinates.count == 2 else { return nil }
+        let coordinate = CLLocationCoordinate2D(latitude: coordinates[0], longitude: coordinates[1])
         return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
     #endif
