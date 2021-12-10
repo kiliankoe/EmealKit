@@ -18,7 +18,8 @@ public struct Cardservice {
         session: URLSession = .shared,
         completion: @escaping (Result<Cardservice, CardserviceError>) -> Void
     ) {
-        guard let url = URL(string: "?karteNr=\(username)&format=JSON&datenformat=JSON",
+        let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
+        guard let url = URL(string: "?karteNr=\(trimmedUsername)&format=JSON&datenformat=JSON",
                             relativeTo: URL.Cardservice.login) else {
             completion(.failure(.invalidURL))
             return
