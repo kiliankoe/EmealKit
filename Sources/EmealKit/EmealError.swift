@@ -1,7 +1,6 @@
 import Foundation
 
 public enum EmealError: Error {
-    case status(Int)
     case other(Error)
     case unknown
 }
