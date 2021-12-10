@@ -3,7 +3,6 @@
 Swift library for accessing some of the meal related data the [Studentenwerk Dresden](http://www.studentenwerk-dresden.de/) has to offer.
 
 
-
 ## Quick Start
 
 ### Current meals or available canteens
@@ -31,8 +30,8 @@ let cardservice = try await Cardservice.login(username: "1234567890", password: 
 let carddata = try await cardservice.carddata()
 print(carddata)
 
-let twoDaysAgo = Date().addingTimeInterval(-60 * 60 * 24 * 2)
-let transactions = try await cardservice.transactions(begin: twoDaysAgo)
+let ninetyDaysAgo = Date().addingTimeInterval(-60 * 60 * 24 * 90)
+let transactions = try await cardservice.transactions(begin: ninetyDaysAgo)
 print(transactions)
 ```
 
@@ -63,6 +62,29 @@ class YourEmealHandler: EmealDelegate {
 }
 ```
 
+It's even easier if you use `ObservableEmeal` in your SwiftUI views. It could look something like this.
+
+```swift
+struct MyView: View {
+    @StateObject private var emeal = ObservableEmeal(localizedStrings: .init(/* ... */))
+    
+    var body: some View {
+        VStack {
+            Text("Balance: \(emeal.currentBalance ?? 0.0)")
+            Text("Last Transaction: \(emeal.lastTransaction ?? 0.0)")
+                
+            if let error = emeal.error {
+                Text(error.localizedDescription)
+                    .foregroundColor(.red)
+            }
+            
+            Button(action: emeal.beginNFCSession) {
+                Text("Scan Emeal")
+            }
+        }
+    }
+}
+```
 
 
 ## Installation
@@ -80,4 +102,4 @@ This library is currently being used in the following applications:
 
 - [Mensa Dresden](https://github.com/kiliankoe/MensaDresden)
 
-Know of any others? Please open a PR! 😊
+Know of any others? Please open a PR and add it to the list! 😊
