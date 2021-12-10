@@ -42,7 +42,7 @@ public struct Cardservice {
                 completion(.failure(error))
             case .success(let loginResponses):
                 guard let first = loginResponses.first else {
-                    completion(.failure(.authentication))
+                    completion(.failure(.noCardDetails))
                     return
                 }
                 let service = Cardservice(username: username, cardnumber: first.karteNr, authToken: first.authToken)

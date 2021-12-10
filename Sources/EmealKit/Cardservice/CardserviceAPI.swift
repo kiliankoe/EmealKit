@@ -35,7 +35,13 @@ internal extension URLSession {
             }
 
             guard response.statusCode / 100 == 2 else {
-                completion(.failure(.server(statusCode: response.statusCode)))
+                if response.statusCode == 599 {
+                    completion(.failure(.invalidLoginCredentials))
+                } else if response.statusCode == 429 {
+                    completion(.failure(.rateLimited))
+                } else {
+                    completion(.failure(.server(statusCode: response.statusCode)))
+                }
                 return
             }
 

@@ -8,8 +8,7 @@ class CardserviceAPITests: XCTestCase {
     lazy var password: String = ProcessInfo.processInfo.environment["EMEAL_PASSWORD"] ?? ""
 
     override func setUp() {
-        // The API is quick to throw 429 status codes on too many consecutive requests, that's why we're sleeping a
-        // second between them.
+        // The API is quick to rate limit on too many consecutive requests, let's throttle it a bit.
         Thread.sleep(forTimeInterval: 1)
         super.setUp()
     }
@@ -19,7 +18,7 @@ class CardserviceAPITests: XCTestCase {
             _ = try await Cardservice.login(username: "", password: "")
             XCTFail("Shouldn't succeed with no login details")
         } catch {
-            guard case CardserviceError.server(statusCode: 599) = error else {
+            guard case CardserviceError.invalidLoginCredentials = error else {
                 XCTFail("Unexpected error: \(error)")
                 return
             }
