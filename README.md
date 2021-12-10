@@ -6,48 +6,34 @@ Swift library for accessing some of the meal related data the [Studentenwerk Dre
 
 ## Quick Start
 
-### Current Meal or Canteen Information
+### Current meals or available canteens
 
 ```swift
-Meal.for(canteen: .alteMensa, on: Date()) { result in
-    guard let meals = result.success else { return }
-    
-    for meal in meals {
-        print(meal.name)
-    }
+let meals = try await Meal.for(canteen: .alteMensa, on: Date())
+for meal in meals {
+    print(meal.name)
 }
 
-Canteen.all { result in
-    guard let canteens = result.success else { return }
-    
-    for canteen in canteens {
-        print(canteen.name)
-    }
+let canteens = try await Canteen.all()
+for canteen in canteens {
+    print(canteen.name)
 }
 ```
 
-Both of these requests also offer publishers for use with Combine.
+A completion block based API and one built on Combine are also available. 
 
 ### Cardservice
 
 Talk to the [Cardservice](www.studentenwerk-dresden.de/mensen/kartenservice/) to acquire data about your Emeal card. You will need to have registered for Autoload to have the necessary authentication details.
 
 ```swift
-Cardservice.login(username: "1234567890", password: "hunter2") { result in
-    guard let service = result.success else { return }
-    
-    service.carddata { result in
-        guard let data = result.success else { return }
-        print(data)
-    }
-    
-    let twoDaysAgo = Date().addingTimeInterval(-60 * 60 * 24 * 2)
-    let now = Date()
-    service.transactions(begin: twoDaysAgo, end: now) { result in
-        guard let transactions = result.success else { return }
-        print(transactions)
-    }
-}
+let cardservice = try await Cardservice.login(username: "1234567890", password: "hunter2")
+let carddata = try await cardservice.carddata()
+print(carddata)
+
+let twoDaysAgo = Date().addingTimeInterval(-60 * 60 * 24 * 2)
+let transactions = try await cardservice.transactions(begin: twoDaysAgo)
+print(transactions)
 ```
 
 ### NFC Scanning

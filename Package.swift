@@ -26,5 +26,8 @@ let package = Package(
         .testTarget(
             name: "EmealKitTests",
             dependencies: ["EmealKit"]),
+        .testTarget(
+            name: "APIValidationTests",
+            dependencies: ["EmealKit"]),
     ]
 )

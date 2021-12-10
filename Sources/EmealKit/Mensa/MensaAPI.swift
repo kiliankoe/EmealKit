@@ -52,6 +52,15 @@ extension Canteen {
             }
         }
     }
+
+    @available(macOS 12.0, iOS 15.0, *)
+    public static func all(session: URLSession = .shared) async throws -> [Canteen] {
+        try await withCheckedThrowingContinuation { continuation in
+            Self.all(session: session) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
 }
 
 #if canImport(Combine)
@@ -92,6 +101,20 @@ extension Meal {
                 } catch let error {
                     completion(.failure(.other(error)))
                 }
+            }
+        }
+    }
+
+    @available(macOS 12.0, iOS 15.0, *)
+    public static func `for`(canteen: CanteenId, on date: Date, session: URLSession = .shared) async throws -> [Meal] {
+        try await Self.for(canteen: canteen.rawValue, on: date, session: session)
+    }
+
+    @available(macOS 12.0, iOS 15.0, *)
+    public static func `for`(canteen: Int, on date: Date, session: URLSession = .shared) async throws -> [Meal] {
+        try await withCheckedThrowingContinuation { continuation in
+            Self.for(canteen: canteen, on: date, session: session) { result in
+                continuation.resume(with: result)
             }
         }
     }
