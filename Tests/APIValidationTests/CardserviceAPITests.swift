@@ -4,8 +4,8 @@ import EmealKit
 
 @available(macOS 12.0, iOS 15.0, *)
 class CardserviceAPITests: XCTestCase {
-    lazy var username: String = ProcessInfo.processInfo.environment["EMEAL_USERNAME"]!
-    lazy var password: String = ProcessInfo.processInfo.environment["EMEAL_PASSWORD"]!
+    lazy var username: String = ProcessInfo.processInfo.environment["EMEAL_USERNAME"] ?? ""
+    lazy var password: String = ProcessInfo.processInfo.environment["EMEAL_PASSWORD"] ?? ""
 
     override func setUp() {
         // The API is quick to throw 429 status codes on too many consecutive requests, that's why we're sleeping a
