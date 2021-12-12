@@ -25,6 +25,30 @@ class CardserviceAPITests: XCTestCase {
         }
     }
 
+    func testLoginWithIllegalCardnumber() async {
+        do {
+            _ = try await Cardservice.login(username: "foobar", password: "foobar")
+            XCTFail("Shouldn't succeed with illegal login details")
+        } catch {
+            guard case CardserviceError.invalidLoginCredentials = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
+    func testLoginWithEmptyPassword() async {
+        do {
+            _ = try await Cardservice.login(username: "foobar", password: "")
+            XCTFail("Shouldn't succeed with illegal login details")
+        } catch {
+            guard case CardserviceError.invalidLoginCredentials = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
     func testLoginSuccess() async throws {
         _ = try await Cardservice.login(username: username, password: password)
     }

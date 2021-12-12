@@ -34,8 +34,10 @@ internal extension URLSession {
                 return
             }
 
+            let responseBody = String(data: data, encoding: .utf8)
+
             guard response.statusCode / 100 == 2 else {
-                if response.statusCode == 599 {
+                if response.statusCode == 599 || responseBody == "Ungültige Zahl" || responseBody == "Ungültiges Argument" {
                     completion(.failure(.invalidLoginCredentials))
                 } else if response.statusCode == 429 {
                     completion(.failure(.rateLimited))
