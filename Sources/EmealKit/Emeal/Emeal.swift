@@ -64,7 +64,11 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
                 guard let _ = try? result.get() else { return }
                 let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
                 miFareTag.send(data: readValueData) { result in
-                    var trimmedData = try! result.get()
+                    guard var trimmedData = try? result.get() else {
+                        session.invalidate(errorMessage: self.strings.nfcReadingError)
+                        print("Failed to read data from result on readValueData: \(result)")
+                        return
+                    }
                     trimmedData.removeLast()
                     trimmedData.removeLast()
                     trimmedData.reverse()
