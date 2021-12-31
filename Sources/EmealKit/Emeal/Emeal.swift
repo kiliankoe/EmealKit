@@ -78,7 +78,12 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
                     let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
                     miFareTag.send(data: readLastTransactionData) { result in
                         var lastTransactionValue = 0.0
-                        let buf = [UInt8](try! result.get())
+                        guard let rawBuf = try? result.get() else {
+                            session.invalidate(errorMessage: self.strings.nfcReadingError)
+                            print("Failed to read data from result on readLastTransactionData: \(result)")
+                            return
+                        }
+                        let buf = [UInt8](rawBuf)
                         if buf.count > 13 {
                             let lastTransactionRaw = [buf[13], buf[12]].byteArrayToInt()
                             lastTransactionValue = lastTransactionRaw.intToEuro()
