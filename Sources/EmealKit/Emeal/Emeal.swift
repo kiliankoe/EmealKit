@@ -39,16 +39,17 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
             session.invalidate(errorMessage: strings.nfcReadingError)
             return
         }
-
-        session.connect(to: tag) { error in
-            guard error == nil else {
+        Task {
+            do {
+                try await session.connect(to: tag)
+            } catch {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
-                print(error!.localizedDescription)
+                print("Failed to connect to NFC tag: \(error)")
                 return
             }
-
             guard case .miFare(let miFareTag) = tag else {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
+                print("NFC tag is not a miFareTag")
                 return
             }
 
@@ -56,46 +57,43 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
             appIdBuffer.append ((Self.APP_ID & 0xFF0000) >> 16)
             appIdBuffer.append ((Self.APP_ID & 0xFF00) >> 8)
             appIdBuffer.append (Self.APP_ID & 0xFF)
-
             let appIdByteArray = [UInt8(appIdBuffer[0]), UInt8(appIdBuffer[1]), UInt8(appIdBuffer[2])]
             let selectAppData = Command.selectApp.wrapped(including: appIdByteArray).data()
+            _ = try? await miFareTag.send(data: selectAppData)
 
-            miFareTag.send(data: selectAppData) { result in
-                guard let _ = try? result.get() else { return }
+            var currentBalanceData: Data
+            do {
                 let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
-                miFareTag.send(data: readValueData) { result in
-                    guard var trimmedData = try? result.get() else {
-                        session.invalidate(errorMessage: self.strings.nfcReadingError)
-                        print("Failed to read data from result on readValueData: \(result)")
-                        return
-                    }
-                    trimmedData.removeLast()
-                    trimmedData.removeLast()
-                    trimmedData.reverse()
-                    let currentBalanceRaw = [UInt8](trimmedData).byteArrayToInt()
-                    let currentBalanceValue = currentBalanceRaw.intToEuro()
+                currentBalanceData = try await miFareTag.send(data: readValueData)
+            } catch {
+                session.invalidate(errorMessage: self.strings.nfcReadingError)
+                print("Failed to read data from result on readValueData: \(error)")
+                return
+            }
+            currentBalanceData.removeLast()
+            currentBalanceData.removeLast()
+            currentBalanceData.reverse()
+            let currentBalanceRaw = [UInt8](currentBalanceData).byteArrayToInt()
+            let currentBalance = currentBalanceRaw.intToEuro()
 
-                    let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
-                    miFareTag.send(data: readLastTransactionData) { result in
-                        var lastTransactionValue = 0.0
-                        guard let rawBuf = try? result.get() else {
-                            session.invalidate(errorMessage: self.strings.nfcReadingError)
-                            print("Failed to read data from result on readLastTransactionData: \(result)")
-                            return
-                        }
-                        let buf = [UInt8](rawBuf)
-                        if buf.count > 13 {
-                            let lastTransactionRaw = [buf[13], buf[12]].byteArrayToInt()
-                            lastTransactionValue = lastTransactionRaw.intToEuro()
-                            DispatchQueue.main.async {
-                                self.delegate?.readData(currentBalance: currentBalanceValue, lastTransaction: lastTransactionValue)
-                            }
-                        }
-
-                        session.invalidate()
-                    }
+            var lastTransRawBuf: Data
+            do {
+                let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
+                lastTransRawBuf = try await miFareTag.send(data: readLastTransactionData)
+            } catch {
+                session.invalidate(errorMessage: self.strings.nfcReadingError)
+                print("Failed to read data from result on readLastTransactionData: \(error)")
+                return
+            }
+            let lastTransBuf = [UInt8](lastTransRawBuf)
+            if lastTransBuf.count > 13 {
+                let lastTransRaw = [lastTransBuf[13], lastTransBuf[12]].byteArrayToInt()
+                let lastTransaction = lastTransRaw.intToEuro()
+                await MainActor.run {
+                    self.delegate?.readData(currentBalance: currentBalance, lastTransaction: lastTransaction)
                 }
             }
+            session.invalidate()
         }
     }
 }
@@ -125,13 +123,12 @@ fileprivate extension UInt8 {
 }
 
 fileprivate extension NFCMiFareTag {
-    func send(data: Data, completion: @escaping (Result<Data, Error>) -> Void) {
-        self.sendMiFareCommand(commandPacket: data) { data, error in
-            if let error = error {
-                completion(.failure(error))
-                return
+    @available(iOS 15.0, *)
+    func send(data: Data) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            sendMiFareCommand(commandPacket: data) { result in
+                continuation.resume(with: result)
             }
-            completion(.success(data))
         }
     }
 }
