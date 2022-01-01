@@ -5,9 +5,6 @@ import CoreNFC
 // Huge thanks to Georg Sieber for a reference implementation of this at https://github.com/schorschii/MensaGuthaben-iOS
 
 public class Emeal: NSObject, NFCTagReaderSessionDelegate {
-    private static var APP_ID: Int = 0x5F8415
-    private static var FILE_ID: UInt8 = 1
-
     private var cardID: Int = 0
     private var readerSession: NFCTagReaderSession?
 
@@ -53,46 +50,19 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
                 return
             }
 
-            var appIdBuffer: [Int] = []
-            appIdBuffer.append ((Self.APP_ID & 0xFF0000) >> 16)
-            appIdBuffer.append ((Self.APP_ID & 0xFF00) >> 8)
-            appIdBuffer.append (Self.APP_ID & 0xFF)
-            let appIdByteArray = [UInt8(appIdBuffer[0]), UInt8(appIdBuffer[1]), UInt8(appIdBuffer[2])]
-            let selectAppData = Command.selectApp.wrapped(including: appIdByteArray).data()
-            _ = try? await miFareTag.send(data: selectAppData)
-
-            var currentBalanceData: Data
             do {
-                let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
-                currentBalanceData = try await miFareTag.send(data: readValueData)
-            } catch {
-                session.invalidate(errorMessage: self.strings.nfcReadingError)
-                print("Failed to read data from result on readValueData: \(error)")
-                return
-            }
-            currentBalanceData.removeLast()
-            currentBalanceData.removeLast()
-            currentBalanceData.reverse()
-            let currentBalanceRaw = [UInt8](currentBalanceData).byteArrayToInt()
-            let currentBalance = currentBalanceRaw.intToEuro()
-
-            var lastTransRawBuf: Data
-            do {
-                let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
-                lastTransRawBuf = try await miFareTag.send(data: readLastTransactionData)
-            } catch {
-                session.invalidate(errorMessage: self.strings.nfcReadingError)
-                print("Failed to read data from result on readLastTransactionData: \(error)")
-                return
-            }
-            let lastTransBuf = [UInt8](lastTransRawBuf)
-            if lastTransBuf.count > 13 {
-                let lastTransRaw = [lastTransBuf[13], lastTransBuf[12]].byteArrayToInt()
-                let lastTransaction = lastTransRaw.intToEuro()
+                await miFareTag.selectApp()
+                let currentBalance = try await miFareTag.readCurrentBalance()
+                let lastTransaction = try await miFareTag.readLastTransaction()
                 await MainActor.run {
                     self.delegate?.readData(currentBalance: currentBalance, lastTransaction: lastTransaction)
                 }
+            } catch {
+                session.invalidate(errorMessage: self.strings.nfcReadingError)
+                print("Failed to read NFC data: \(error)")
+                return
             }
+
             session.invalidate()
         }
     }
@@ -130,6 +100,40 @@ fileprivate extension NFCMiFareTag {
                 continuation.resume(with: result)
             }
         }
+    }
+
+    private static var APP_ID: Int { 0x5F8415 }
+    private static var FILE_ID: UInt8 { 1 }
+
+    func selectApp() async {
+        var appIdBuffer: [Int] = []
+        appIdBuffer.append ((Self.APP_ID & 0xFF0000) >> 16)
+        appIdBuffer.append ((Self.APP_ID & 0xFF00) >> 8)
+        appIdBuffer.append (Self.APP_ID & 0xFF)
+        let appIdByteArray = [UInt8(appIdBuffer[0]), UInt8(appIdBuffer[1]), UInt8(appIdBuffer[2])]
+        let selectAppData = Command.selectApp.wrapped(including: appIdByteArray).data()
+        _ = try? await self.send(data: selectAppData)
+    }
+
+    func readCurrentBalance() async throws -> Double {
+        let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
+        var currentBalanceData = try await self.send(data: readValueData)
+        currentBalanceData.removeLast()
+        currentBalanceData.removeLast()
+        currentBalanceData.reverse()
+        let currentBalance = [UInt8](currentBalanceData).byteArrayToInt()
+        return currentBalance.intToEuro()
+    }
+
+    func readLastTransaction() async throws -> Double {
+        let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
+        let lastTransRawBuf = try await self.send(data: readLastTransactionData)
+        let lastTransBuf = [UInt8](lastTransRawBuf)
+        if lastTransBuf.count > 13 {
+            let lastTransaction = [lastTransBuf[13], lastTransBuf[12]].byteArrayToInt()
+            return lastTransaction.intToEuro()
+        }
+        return 0.0
     }
 }
 
