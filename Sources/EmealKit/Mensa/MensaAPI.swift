@@ -23,6 +23,7 @@ extension URLSession {
             else {
                 if let urlError = error {
                     completion(.failure(.other(urlError)))
+                    return
                 }
                 completion(.failure(.unknown))
                 return
