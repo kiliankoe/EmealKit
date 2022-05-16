@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public struct Cardservice {
     let username: String
@@ -35,16 +36,20 @@ public struct Cardservice {
         """.data(using: .utf8)
         request.httpBody = data
 
+        Logger.emealKit.info("Performing Cardservice login for \(username, privacy: .private)")
         session.cardserviceDataTask(with: request, session: session) {
             (result: Result<[LoginResponse], CardserviceError>) in
             switch result {
             case .failure(let error):
+                Logger.emealKit.error("Failed to login to Cardservice: \(String(describing: error))")
                 completion(.failure(error))
             case .success(let loginResponses):
                 guard let first = loginResponses.first else {
+                    Logger.emealKit.error("Successfully logged in to Cardservice, but found no card details")
                     completion(.failure(.noCardDetails))
                     return
                 }
+                Logger.emealKit.info("Successfully logged in to Cardservice")
                 let service = Cardservice(username: username, cardnumber: first.karteNr, authToken: first.authToken)
                 completion(.success(service))
             }
@@ -85,12 +90,16 @@ public struct Cardservice {
             return
         }
         let request = URLRequest(url: url)
+
+        Logger.emealKit.info("Fetching card data for \(cardnumber, privacy: .private)")
         session.cardserviceDataTask(with: request, session: session) {
             (result: Result<[CardDataService], CardserviceError>) in
             switch result {
             case .failure(let error):
+                Logger.emealKit.error("Failed to fetch card data: \(String(describing: error))")
                 completion(.failure(error))
             case .success(let servicedata):
+                Logger.emealKit.info("Successfully fetched card data")
                 let carddata = servicedata.map { CardData(from: $0) }
                 completion(.success(carddata))
             }
@@ -141,14 +150,18 @@ public struct Cardservice {
 
         // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each
         // other.
+        Logger.emealKit.info("Fetching transactions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
         session.cardserviceDataTask(with: transactionRequest, session: session) {
             (transactionsResult: Result<[TransactionService], CardserviceError>) in
+            Logger.emealKit.info("Fetching positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
             session.cardserviceDataTask(with: positionsRequest, session: session) {
                 (positionsResult: Result<[Transaction.Position], CardserviceError>) in
                 switch (transactionsResult, positionsResult) {
                 case (.failure(let error), _):
+                    Logger.emealKit.error("Failed to fetch transaction data: \(String(describing: error))")
                     completion(.failure(error))
                 case (_, .failure(let error)):
+                    Logger.emealKit.error("Failed to fetch position data: \(String(describing: error))")
                     completion(.failure(error))
                 case (.success(let services), .success(let positions)):
                     do {
@@ -156,8 +169,10 @@ public struct Cardservice {
                         transactions.sort { lhs, rhs in
                             return lhs.date < rhs.date
                         }
+                        Logger.emealKit.info("Succesfully fetched transactions")
                         completion(.success(transactions))
                     } catch let error {
+                        Logger.emealKit.error("Failed to create transaction data: \(String(describing: error))")
                         completion(.failure(.decoding(.other(error))))
                     }
                 }

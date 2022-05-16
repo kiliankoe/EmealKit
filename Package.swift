@@ -5,10 +5,10 @@ import PackageDescription
 let package = Package(
     name: "EmealKit",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v11),
         .iOS(.v15),
-        .watchOS(.v6),
-        .tvOS(.v13),
+        .watchOS(.v7),
+        .tvOS(.v14),
     ],
     products: [
         .library(

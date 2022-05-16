@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 #if canImport(Combine)
 import Combine
@@ -39,15 +40,19 @@ extension URLSession {
 extension Canteen {
     public static func all(session: URLSession = .shared,
                            completion: @escaping (Result<[Canteen], EmealError>) -> Void) {
+        Logger.emealKit.info("Creating data task for all canteens")
         session.emealDataTask(with: URL.Mensa.canteens) { result in
             switch result {
             case .failure(let error):
+                Logger.emealKit.error("Failed to fetch canteen data: \(String(describing: error))")
                 completion(.failure(error))
             case .success(let data):
                 do {
                     let canteens = try JSONDecoder().decode([Canteen].self, from: data)
+                    Logger.emealKit.info("Successfully fetched \(canteens.count) canteens")
                     completion(.success(canteens))
                 } catch let error {
+                    Logger.emealKit.info("Failed to decode Canteen data: \(String(describing: error))")
                     completion(.failure(.other(error)))
                 }
             }
@@ -91,15 +96,19 @@ extension Meal {
                              on date: Date,
                              session: URLSession = .shared,
                              completion: @escaping (Result<[Meal], EmealError>) -> Void) {
+        Logger.emealKit.info("Creating data task for canteen \(canteen) on \(date)")
         session.emealDataTask(with: URL.Mensa.meals(canteen: canteen, date: date)) { result in
             switch result {
             case .failure(let error):
+                Logger.emealKit.error("Failed to fetch meal data: \(String(describing: error))")
                 completion(.failure(error))
             case .success(let data):
                 do {
                     let meals = try JSONDecoder().decode([Meal].self, from: data)
+                    Logger.emealKit.info("Successfully fetched \(meals.count) meals")
                     completion(.success(meals))
                 } catch let error {
+                    Logger.emealKit.error("Failed to decode meal data: \(String(describing: error))")
                     completion(.failure(.other(error)))
                 }
             }

@@ -1,6 +1,7 @@
 #if canImport(CoreNFC)
 import Foundation
 import CoreNFC
+import os.log
 
 // Huge thanks to Georg Sieber for a reference implementation of this at https://github.com/schorschii/MensaGuthaben-iOS
 
@@ -17,6 +18,7 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     /// Begin the NFC reading session prompting the user to hold their device to their card.
     public func beginNFCSession() {
+        Logger.emealKitNFC.info("Beginning session")
         readerSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
         readerSession?.alertMessage = strings.alertMessage
         readerSession?.begin()
@@ -25,6 +27,7 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {}
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
+        Logger.emealKitNFC.error("Session invalidated with error: \(String(describing: error))")
         readerSession = nil
         DispatchQueue.main.async {
             self.delegate?.invalidate(with: error)
@@ -33,33 +36,39 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
         guard let tag = tags.first else {
+            Logger.emealKitNFC.error("Failed to read tags, no tags found")
             session.invalidate(errorMessage: strings.nfcReadingError)
             return
         }
+        Logger.emealKitNFC.info("Detected NFC tags (first will be used): \(tags)")
         Task {
             do {
+                Logger.emealKitNFC.info("Connecting to NFC tag")
                 try await session.connect(to: tag)
             } catch {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
-                print("Failed to connect to NFC tag: \(error)")
+                Logger.emealKitNFC.error("Failed to connect to NFC tag: \(String(describing: error))")
                 return
             }
             guard case .miFare(let miFareTag) = tag else {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
-                print("NFC tag is not a miFareTag")
+                Logger.emealKitNFC.error("NFC tag is not a miFareTag")
                 return
             }
 
             do {
+                Logger.emealKitNFC.info("Selecting app")
                 await miFareTag.selectApp()
                 let currentBalance = try await miFareTag.readCurrentBalance()
+                Logger.emealKitNFC.info("Read current balance: \(currentBalance, privacy: .sensitive)")
                 let lastTransaction = try await miFareTag.readLastTransaction()
+                Logger.emealKitNFC.info("Read last transaction date: \(lastTransaction, privacy: .sensitive)")
                 await MainActor.run {
                     self.delegate?.readData(currentBalance: currentBalance, lastTransaction: lastTransaction)
                 }
             } catch {
                 session.invalidate(errorMessage: self.strings.nfcReadingError)
-                print("Failed to read NFC data: \(error)")
+                Logger.emealKitNFC.error("Failed to read NFC data: \(String(describing: error))")
                 return
             }
 
