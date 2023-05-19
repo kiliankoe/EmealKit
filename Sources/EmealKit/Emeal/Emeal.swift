@@ -18,7 +18,7 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     /// Begin the NFC reading session prompting the user to hold their device to their card.
     public func beginNFCSession() {
-        Logger.emealKitNFC.info("Beginning session")
+        Logger.emealKitNFC.debug("Beginning session")
         readerSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
         readerSession?.alertMessage = strings.alertMessage
         readerSession?.begin()
@@ -40,40 +40,125 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
             session.invalidate(errorMessage: strings.nfcReadingError)
             return
         }
-        Logger.emealKitNFC.info("Detected NFC tags (first will be used): \(tags)")
+        Logger.emealKitNFC.debug("Detected NFC tags (first will be used): \(tags)")
         Task {
             do {
-                Logger.emealKitNFC.info("Connecting to NFC tag")
+                Logger.emealKitNFC.debug("Connecting to NFC tag")
                 try await session.connect(to: tag)
             } catch {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
                 Logger.emealKitNFC.error("Failed to connect to NFC tag: \(String(describing: error))")
                 return
             }
-            guard case .miFare(let miFareTag) = tag else {
-                session.invalidate(errorMessage: self.strings.nfcConnectionError)
-                Logger.emealKitNFC.error("NFC tag is not a miFareTag")
-                return
-            }
 
             do {
-                Logger.emealKitNFC.info("Selecting app")
-                await miFareTag.selectApp()
-                let currentBalance = try await miFareTag.readCurrentBalance()
-                Logger.emealKitNFC.info("Read current balance: \(currentBalance, privacy: .sensitive)")
-                let lastTransaction = try await miFareTag.readLastTransaction()
-                Logger.emealKitNFC.info("Read last transaction date: \(lastTransaction, privacy: .sensitive)")
+                guard let card = GenericNFCTag(tag: tag) else {
+                    Logger.emealKitNFC.error("Unexpected tag type: \(String(describing: tag))")
+                    self.readerSession?.invalidate(errorMessage: strings.nfcReadingError)
+                    return
+                }
+                Logger.emealKitNFC.info("Detected \(String(describing: card.card)) with ID \(card.id, privacy: .sensitive)")
+                let (currentBalance, lastTransaction) = try await card.readTag()
                 await MainActor.run {
                     self.delegate?.readData(currentBalance: currentBalance, lastTransaction: lastTransaction)
+                    session.invalidate()
                 }
             } catch {
-                session.invalidate(errorMessage: self.strings.nfcReadingError)
-                Logger.emealKitNFC.error("Failed to read NFC data: \(String(describing: error))")
+                Logger.emealKitNFC.error("Failed to read NFC data from card: \(String(describing: error))")
+                await MainActor.run {
+                    session.invalidate(errorMessage: self.strings.nfcReadingError)
+                }
                 return
             }
-
-            session.invalidate()
         }
+    }
+}
+
+private struct GenericNFCTag {
+    enum CardType {
+        case miFare(NFCMiFareTag)
+        case iso7816(NFCISO7816Tag)
+    }
+    var card: CardType
+
+    init?(tag: NFCTag) {
+        switch tag {
+        case .miFare(let emeal):
+            self.card = .miFare(emeal)
+        case .iso7816(let campuscard):
+            self.card = .iso7816(campuscard)
+        default:
+            return nil
+        }
+    }
+
+    var id: Int {
+        var idData = {
+            switch card {
+            case .miFare(let tag):
+                return tag.identifier
+            case .iso7816(let tag):
+                return tag.identifier
+            }
+        }()
+        if idData.count == 7 {
+            idData.append(UInt8(0))
+        }
+        return idData.withUnsafeBytes {
+            $0.load(as: Int.self)
+        }
+    }
+
+    private static var APP_ID: Int { 0x5F8415 }
+    private static var FILE_ID: UInt8 { 1 }
+
+    func readTag() async throws -> (Double, Double) {
+        await selectApp()
+        let currentBalance = try await readCurrentBalance()
+        Logger.emealKitNFC.info("Read current balance: \(currentBalance, privacy: .sensitive)")
+        let lastTransaction = try await readLastTransaction()
+        Logger.emealKitNFC.info("Read last transaction: \(lastTransaction, privacy: .sensitive)")
+        return (currentBalance, lastTransaction)
+    }
+
+    private func send(_ data: Data) async throws -> Data {
+        switch card {
+        case .miFare(let miFareTag):
+            return try await miFareTag.send(data: data)
+        case .iso7816(let iso7816Tag):
+            return try await iso7816Tag.send(data: data)
+        }
+    }
+
+    private func selectApp() async {
+        var appIdBuffer: [Int] = []
+        appIdBuffer.append((Self.APP_ID & 0xFF0000) >> 16)
+        appIdBuffer.append((Self.APP_ID & 0xFF00) >> 8)
+        appIdBuffer.append(Self.APP_ID & 0xFF)
+        let appIdByteArray = [UInt8(appIdBuffer[0]), UInt8(appIdBuffer[1]), UInt8(appIdBuffer[2])]
+        let selectAppData = Command.selectApp.wrapped(including: appIdByteArray).data()
+        _ = try? await send(selectAppData)
+    }
+
+    private func readCurrentBalance() async throws -> Double {
+        let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
+        var currentBalanceData = try await send(readValueData)
+        currentBalanceData.removeLast()
+        currentBalanceData.removeLast()
+        currentBalanceData.reverse()
+        let currentBalance = [UInt8](currentBalanceData).byteArrayToInt()
+        return currentBalance.intToEuro()
+    }
+
+    private func readLastTransaction() async throws -> Double {
+        let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
+        let lastTransRawBuf = try await send(readLastTransactionData)
+        let lastTransBuf = [UInt8](lastTransRawBuf)
+        if lastTransBuf.count > 13 {
+            let lastTransaction = [lastTransBuf[13], lastTransBuf[12]].byteArrayToInt()
+            return lastTransaction.intToEuro()
+        }
+        return 0.0
     }
 }
 
@@ -102,7 +187,6 @@ fileprivate extension UInt8 {
 }
 
 fileprivate extension NFCMiFareTag {
-    @available(iOS 15.0, *)
     func send(data: Data) async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
             sendMiFareCommand(commandPacket: data) { result in
@@ -110,39 +194,19 @@ fileprivate extension NFCMiFareTag {
             }
         }
     }
+}
 
-    private static var APP_ID: Int { 0x5F8415 }
-    private static var FILE_ID: UInt8 { 1 }
-
-    func selectApp() async {
-        var appIdBuffer: [Int] = []
-        appIdBuffer.append ((Self.APP_ID & 0xFF0000) >> 16)
-        appIdBuffer.append ((Self.APP_ID & 0xFF00) >> 8)
-        appIdBuffer.append (Self.APP_ID & 0xFF)
-        let appIdByteArray = [UInt8(appIdBuffer[0]), UInt8(appIdBuffer[1]), UInt8(appIdBuffer[2])]
-        let selectAppData = Command.selectApp.wrapped(including: appIdByteArray).data()
-        _ = try? await self.send(data: selectAppData)
-    }
-
-    func readCurrentBalance() async throws -> Double {
-        let readValueData = Command.readValue.wrapped(including: [Self.FILE_ID]).data()
-        var currentBalanceData = try await self.send(data: readValueData)
-        currentBalanceData.removeLast()
-        currentBalanceData.removeLast()
-        currentBalanceData.reverse()
-        let currentBalance = [UInt8](currentBalanceData).byteArrayToInt()
-        return currentBalance.intToEuro()
-    }
-
-    func readLastTransaction() async throws -> Double {
-        let readLastTransactionData = Command.readLastTransaction.wrapped(including: [Self.FILE_ID]).data()
-        let lastTransRawBuf = try await self.send(data: readLastTransactionData)
-        let lastTransBuf = [UInt8](lastTransRawBuf)
-        if lastTransBuf.count > 13 {
-            let lastTransaction = [lastTransBuf[13], lastTransBuf[12]].byteArrayToInt()
-            return lastTransaction.intToEuro()
+fileprivate extension NFCISO7816Tag {
+    func send(data: Data) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            sendCommand(apdu: .init(data: data)!) { data, sw1, sw2, error in
+                guard error == nil else {
+                    continuation.resume(throwing: error!)
+                    return
+                }
+                continuation.resume(returning: data)
+            }
         }
-        return 0.0
     }
 }
 
