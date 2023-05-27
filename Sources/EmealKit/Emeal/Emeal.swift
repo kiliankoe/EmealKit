@@ -18,7 +18,7 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     /// Begin the NFC reading session prompting the user to hold their device to their card.
     public func beginNFCSession() {
-        Logger.emealKitNFC.debug("Beginning session")
+        Logger.emealKit.debug("Beginning session")
         readerSession = NFCTagReaderSession(pollingOption: .iso14443, delegate: self)
         readerSession?.alertMessage = strings.alertMessage
         readerSession?.begin()
@@ -27,7 +27,7 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {}
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
-        Logger.emealKitNFC.error("Session invalidated with error: \(String(describing: error))")
+        Logger.emealKit.error("Session invalidated with error: \(String(describing: error))")
         readerSession = nil
         DispatchQueue.main.async {
             self.delegate?.invalidate(with: error)
@@ -36,35 +36,35 @@ public class Emeal: NSObject, NFCTagReaderSessionDelegate {
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
         guard let tag = tags.first else {
-            Logger.emealKitNFC.error("Failed to read tags, no tags found")
+            Logger.emealKit.error("Failed to read tags, no tags found")
             session.invalidate(errorMessage: strings.nfcReadingError)
             return
         }
-        Logger.emealKitNFC.debug("Detected NFC tags (first will be used): \(tags)")
+        Logger.emealKit.debug("Detected NFC tags (first will be used): \(tags)")
         Task {
             do {
-                Logger.emealKitNFC.debug("Connecting to NFC tag")
+                Logger.emealKit.debug("Connecting to NFC tag")
                 try await session.connect(to: tag)
             } catch {
                 session.invalidate(errorMessage: self.strings.nfcConnectionError)
-                Logger.emealKitNFC.error("Failed to connect to NFC tag: \(String(describing: error))")
+                Logger.emealKit.error("Failed to connect to NFC tag: \(String(describing: error))")
                 return
             }
 
             do {
                 guard let card = GenericNFCTag(tag: tag) else {
-                    Logger.emealKitNFC.error("Unexpected tag type: \(String(describing: tag))")
+                    Logger.emealKit.error("Unexpected tag type: \(String(describing: tag))")
                     self.readerSession?.invalidate(errorMessage: strings.nfcReadingError)
                     return
                 }
-                Logger.emealKitNFC.info("Detected \(String(describing: card.card)) with ID \(card.id, privacy: .sensitive)")
+                Logger.emealKit.info("Detected \(String(describing: card.card)) with ID \(card.id, privacy: .sensitive)")
                 let (currentBalance, lastTransaction) = try await card.readTag()
                 await MainActor.run {
                     self.delegate?.readData(currentBalance: currentBalance, lastTransaction: lastTransaction)
                     session.invalidate()
                 }
             } catch {
-                Logger.emealKitNFC.error("Failed to read NFC data from card: \(String(describing: error))")
+                Logger.emealKit.error("Failed to read NFC data from card: \(String(describing: error))")
                 await MainActor.run {
                     session.invalidate(errorMessage: self.strings.nfcReadingError)
                 }
@@ -115,9 +115,9 @@ private struct GenericNFCTag {
     func readTag() async throws -> (Double, Double) {
         await selectApp()
         let currentBalance = try await readCurrentBalance()
-        Logger.emealKitNFC.info("Read current balance: \(currentBalance, privacy: .sensitive)")
+        Logger.emealKit.info("Read current balance: \(currentBalance, privacy: .sensitive)")
         let lastTransaction = try await readLastTransaction()
-        Logger.emealKitNFC.info("Read last transaction: \(lastTransaction, privacy: .sensitive)")
+        Logger.emealKit.info("Read last transaction: \(lastTransaction, privacy: .sensitive)")
         return (currentBalance, lastTransaction)
     }
 

@@ -36,7 +36,7 @@ public struct Cardservice {
         """.data(using: .utf8)
         request.httpBody = data
 
-        Logger.emealKit.info("Performing Cardservice login for \(username, privacy: .private)")
+        Logger.emealKit.debug("Performing Cardservice login for \(username, privacy: .private)")
         session.cardserviceDataTask(with: request, session: session) {
             (result: Result<[LoginResponse], CardserviceError>) in
             switch result {
@@ -49,7 +49,7 @@ public struct Cardservice {
                     completion(.failure(.noCardDetails))
                     return
                 }
-                Logger.emealKit.info("Successfully logged in to Cardservice")
+                Logger.emealKit.debug("Successfully logged in to Cardservice")
                 let service = Cardservice(username: username, cardnumber: first.karteNr, authToken: first.authToken)
                 completion(.success(service))
             }
@@ -91,7 +91,7 @@ public struct Cardservice {
         }
         let request = URLRequest(url: url)
 
-        Logger.emealKit.info("Fetching card data for \(cardnumber, privacy: .private)")
+        Logger.emealKit.debug("Fetching card data for \(cardnumber, privacy: .private)")
         session.cardserviceDataTask(with: request, session: session) {
             (result: Result<[CardDataService], CardserviceError>) in
             switch result {
@@ -99,7 +99,7 @@ public struct Cardservice {
                 Logger.emealKit.error("Failed to fetch card data: \(String(describing: error))")
                 completion(.failure(error))
             case .success(let servicedata):
-                Logger.emealKit.info("Successfully fetched card data")
+                Logger.emealKit.debug("Successfully fetched card data")
                 let carddata = servicedata.map { CardData(from: $0) }
                 completion(.success(carddata))
             }
@@ -150,10 +150,10 @@ public struct Cardservice {
 
         // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each
         // other.
-        Logger.emealKit.info("Fetching transactions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
+        Logger.emealKit.debug("Fetching transactions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
         session.cardserviceDataTask(with: transactionRequest, session: session) {
             (transactionsResult: Result<[TransactionService], CardserviceError>) in
-            Logger.emealKit.info("Fetching positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
+            Logger.emealKit.debug("Fetching positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
             session.cardserviceDataTask(with: positionsRequest, session: session) {
                 (positionsResult: Result<[Transaction.Position], CardserviceError>) in
                 switch (transactionsResult, positionsResult) {
@@ -169,7 +169,7 @@ public struct Cardservice {
                         transactions.sort { lhs, rhs in
                             return lhs.date < rhs.date
                         }
-                        Logger.emealKit.info("Succesfully fetched transactions")
+                        Logger.emealKit.debug("Succesfully fetched transactions")
                         completion(.success(transactions))
                     } catch let error {
                         Logger.emealKit.error("Failed to create transaction data: \(String(describing: error))")
