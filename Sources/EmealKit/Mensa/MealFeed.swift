@@ -13,6 +13,10 @@ extension Meal {
         func matches(meal: Meal) -> Bool {
             return link.contains(String(meal.id))
         }
+
+        var isSoldOut: Bool {
+            title.lowercased().contains("ausverkauft")
+        }
     }
 
     public static func rssData(session: URLSession = .shared) async throws -> [RSSMeal] {
