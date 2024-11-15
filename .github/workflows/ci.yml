@@ -4,9 +4,9 @@ on: [push]
 
 jobs:
   build_and_test:
-    runs-on: macos-latest
+    runs-on: macos-15 # go back to macos-latest once 15 becomes the default
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build
       run: swift build -v
     - name: Tests
