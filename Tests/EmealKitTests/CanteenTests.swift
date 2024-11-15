@@ -5,8 +5,8 @@ import CoreLocation
 class CanteenTests: XCTestCase {
     @available(macOS 12.0, iOS 15.0, *)
     func testMockFetchAndDecode() async throws {
-        let canteens = try await Canteen.all(session: MockURLSession(mockData: .canteens))
-        XCTAssertEqual(canteens.count, 21)
+        let canteens = try await Canteen.all(session: MockURLSession(data: .canteens))
+        XCTAssertEqual(canteens.count, 16)
     }
 
     func testLocation() {

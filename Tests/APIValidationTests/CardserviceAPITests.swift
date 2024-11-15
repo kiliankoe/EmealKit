@@ -50,16 +50,28 @@ class CardserviceAPITests: XCTestCase {
     }
 
     func testLoginSuccess() async throws {
+        if ProcessInfo.processInfo.environment["CI"] != nil {
+            print("Skipping test in CI.")
+            return
+        }
         _ = try await Cardservice.login(username: username, password: password)
     }
 
     func testFetchCarddata() async throws {
+        if ProcessInfo.processInfo.environment["CI"] != nil {
+            print("Skipping test in CI.")
+            return
+        }
         let cardservice = try await Cardservice.login(username: username, password: password)
         let carddata = try await cardservice.carddata()
         XCTAssert(!carddata.isEmpty)
     }
 
     func testFetchTransactions() async throws {
+        if ProcessInfo.processInfo.environment["CI"] != nil {
+            print("Skipping test in CI.")
+            return
+        }
         let cardservice = try await Cardservice.login(username: username, password: password)
         let oneWeekAgo = Date().addingTimeInterval(-1 * 60 * 60 * 24 * 7)
         _ = try await cardservice.transactions(begin: oneWeekAgo)

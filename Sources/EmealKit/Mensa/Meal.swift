@@ -11,6 +11,8 @@ public struct Meal: Identifiable, Equatable, Decodable {
     public var image: URL
     public var url: URL
 
+    public var isSoldOut: Bool?
+
     private enum CodingKeys: String, CodingKey {
         case id
         case name
