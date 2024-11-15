@@ -1,5 +1,8 @@
 # 🌯 EmealKit
 
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkiliankoe%2FEmealKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/kiliankoe/EmealKit)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkiliankoe%2FEmealKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/kiliankoe/EmealKit)
+
 Swift library for accessing some of the meal related data the [Studentenwerk Dresden](http://www.studentenwerk-dresden.de/) has to offer.
 
 
