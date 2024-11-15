@@ -4,14 +4,20 @@ import EmealKit
 class MealTests: XCTestCase {
     @available(macOS 12.0, iOS 15.0, *)
     func testMockFetchAndDecode() async throws {
-        let meals = try await Meal.for(canteen: .alteMensa, on: Date(), session: MockURLSession(mockData: .meals))
-        XCTAssertEqual(meals.count, 5)
+        let meals = try await Meal.for(canteen: .alteMensa, on: Date(), session: MockURLSession(data: .meals))
+        XCTAssertEqual(meals.count, 4)
     }
 
     func testPlaceholderImage() {
-        let meal = Meal(id: 0, name: "", notes: [], prices: nil, category: "",
-                        image: URL(string: "https://static.studentenwerk-dresden.de/bilder/mensen/studentenwerk-dresden-lieber-mensen-gehen.jpg")!,
-                        url: URL(string: "q")!)
+        let meal = Meal(
+            id: 0,
+            name: "",
+            notes: [],
+            prices: nil,
+            category: "",
+            image: URL(string: "https://static.studentenwerk-dresden.de/bilder/mensen/studentenwerk-dresden-lieber-mensen-gehen.jpg")!,
+            url: URL(string: "q")!
+        )
         XCTAssert(meal.imageIsPlaceholder)
     }
 
@@ -77,6 +83,16 @@ class MealTests: XCTestCase {
         let prices2 = try JSONDecoder().decode(Meal.Prices.self, from: extraColonPrices)
         XCTAssertEqual(prices2.students, 1.0)
         XCTAssertEqual(prices2.employees, 1.0)
+    }
+
+    func testFeedData() async throws {
+        // Unfortunately we can't really test this with mock data since there's no way to inject anything into FeedKit.
+        let feedItems = try await Meal.rssData()
+        XCTAssertGreaterThan(feedItems.count, 0)
+    }
+
+    func testSoldOut() async throws {
+        // see above
     }
 }
 

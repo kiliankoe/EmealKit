@@ -19,7 +19,7 @@ extension Meal {
         }
     }
 
-    public static func rssData(session: URLSession = .shared) async throws -> [RSSMeal] {
+    public static func rssData() async throws -> [RSSMeal] {
         let feedURL = URL(string: "https://www.studentenwerk-dresden.de/feeds/speiseplan.rss")!
         let parser = FeedParser(URL: feedURL)
         return try await withCheckedThrowingContinuation { continuation in

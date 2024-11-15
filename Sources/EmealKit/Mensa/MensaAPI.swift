@@ -14,10 +14,11 @@ internal extension URL {
 // MARK: - Canteens
 
 extension Canteen {
-    public static func all(session: URLSession = .shared) async throws(EmealError) -> [Canteen] {
+    public static func all(session: URLSessionProtocol = URLSession.shared) async throws(EmealError) -> [Canteen] {
         Logger.emealKit.debug("Fetching all canteens")
         do {
             let (data, _) = try await session.data(from: URL.Mensa.canteens)
+            print(String(data: data, encoding: .utf8)!)
             let canteens = try JSONDecoder().decode([Canteen].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(canteens.count) canteens")
             return canteens
@@ -31,22 +32,27 @@ extension Canteen {
 // MARK: - Meals
 
 extension Meal {
-    public static func `for`(canteen: Int, on date: Date, session: URLSession = .shared) async throws(EmealError) -> [Meal] {
+    public static func `for`(canteen: Int, on date: Date, session: URLSessionProtocol = URLSession.shared) async throws(EmealError) -> [Meal] {
         Logger.emealKit.debug("Fetching meals for canteen \(canteen) on \(date)")
         do {
             let (data, _) = try await session.data(from: URL.Mensa.meals(canteen: canteen, date: date))
             let meals = try JSONDecoder().decode([Meal].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(meals.count) meals")
 
-            let feedItems = try await Self.rssData()
-            return meals.map { meal in
-                var meal = meal
-                let matchingItem = feedItems.first { $0.matches(meal: meal) }
-                if let matchingItem {
-                    Logger.emealKit.debug("Found matching feeditem for \(meal.id)")
-                    meal.isSoldOut = matchingItem.isSoldOut
+            do {
+                let feedItems = try await Self.rssData()
+                return meals.map { meal in
+                    var meal = meal
+                    let matchingItem = feedItems.first { $0.matches(meal: meal) }
+                    if let matchingItem {
+                        Logger.emealKit.debug("Found matching feeditem for \(meal.id)")
+                        meal.isSoldOut = matchingItem.isSoldOut
+                    }
+                    return meal
                 }
-                return meal
+            } catch (let error) {
+                Logger.emealKit.log("Failed to fetch rss data, continuing without: \(String(describing: error))")
+                return meals
             }
         } catch (let error) {
             Logger.emealKit.error("Failed to fetch meal data: \(String(describing: error))")
@@ -54,7 +60,7 @@ extension Meal {
         }
     }
 
-    public static func `for`(canteen: CanteenId, on date: Date, session: URLSession = .shared) async throws(EmealError) -> [Meal] {
+    public static func `for`(canteen: CanteenId, on date: Date, session: URLSessionProtocol = URLSession.shared) async throws(EmealError) -> [Meal] {
         try await Self.for(canteen: canteen.rawValue, on: date, session: session)
     }
 }
