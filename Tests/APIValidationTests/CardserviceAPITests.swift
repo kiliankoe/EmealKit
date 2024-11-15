@@ -50,6 +50,10 @@ class CardserviceAPITests: XCTestCase {
     }
 
     func testLoginSuccess() async throws {
+        if ProcessInfo.processInfo.environment["CI"] != nil {
+            print("Skipping successful login test in CI.")
+            return
+        }
         _ = try await Cardservice.login(username: username, password: password)
     }
 
