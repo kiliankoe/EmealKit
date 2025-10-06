@@ -104,5 +104,6 @@ EmealKit is available through Swift Package Manager.
 This library is currently being used in the following applications:
 
 - [Mensa Dresden](https://github.com/kiliankoe/MensaDresden)
+- [MensaPlus](https://apps.apple.com/us/app/mensaplus-dresden-mensa-app/id1182724417)
 
 Know of any others? Please open a PR and add it to the list! 😊
