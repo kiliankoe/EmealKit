@@ -21,6 +21,7 @@ public struct Meal: Identifiable, Equatable, Decodable {
         case category
         case image
         case url
+        case isSoldOut = "soldout"
     }
 
     public struct Prices: Equatable, Decodable {
@@ -83,6 +84,7 @@ public struct Meal: Identifiable, Equatable, Decodable {
         self.image = URL(string: imageURLString) ?? Meal.placeholderImageURL
 
         self.url = try container.decode(URL.self, forKey: .url)
+        self.isSoldOut = try container.decodeIfPresent(Bool.self, forKey: .isSoldOut)
     }
 
     public init(id: Int, name: String, notes: [String], prices: Meal.Prices?, category: String, image: URL, url: URL) {

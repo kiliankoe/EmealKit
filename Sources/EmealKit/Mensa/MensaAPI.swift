@@ -38,43 +38,7 @@ extension Meal {
             let (data, _) = try await session.data(from: URL.Mensa.meals(canteen: canteen, date: date))
             let meals = try JSONDecoder().decode([Meal].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(meals.count) meals")
-
-            // Fetch sold out status from Speiseplan (primary source)
-            var soldOutIds = Set<Int>()
-            do {
-                soldOutIds = try await SpeiseplanScraper.fetchSoldOutMealIds(session: session)
-            } catch {
-                Logger.emealKit.log("Failed to fetch sold out status from Speiseplan: \(String(describing: error))")
-            }
-            
-            // Also try RSS feed as additional source
-            do {
-                let feedItems = try await Self.rssData()
-                return meals.map { meal in
-                    var meal = meal
-                    
-                    // Use Speiseplan data if available
-                    if !soldOutIds.isEmpty {
-                        meal.isSoldOut = soldOutIds.contains(meal.id)
-                    } else {
-                        // Fallback to RSS detection
-                        let matchingItem = feedItems.first { $0.matches(meal: meal) }
-                        if let matchingItem {
-                            Logger.emealKit.debug("Found matching feeditem for \(meal.id)")
-                            meal.isSoldOut = matchingItem.isSoldOut
-                        }
-                    }
-                    return meal
-                }
-            } catch (let error) {
-                Logger.emealKit.log("Failed to fetch RSS data: \(String(describing: error))")
-                // If RSS also failed, just use Speiseplan data
-                return meals.map { meal in
-                    var meal = meal
-                    meal.isSoldOut = soldOutIds.contains(meal.id)
-                    return meal
-                }
-            }
+            return meals
         } catch (let error) {
             Logger.emealKit.error("Failed to fetch meal data: \(String(describing: error))")
             throw .other(error)
