@@ -38,22 +38,7 @@ extension Meal {
             let (data, _) = try await session.data(from: URL.Mensa.meals(canteen: canteen, date: date))
             let meals = try JSONDecoder().decode([Meal].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(meals.count) meals")
-
-            do {
-                let feedItems = try await Self.rssData()
-                return meals.map { meal in
-                    var meal = meal
-                    let matchingItem = feedItems.first { $0.matches(meal: meal) }
-                    if let matchingItem {
-                        Logger.emealKit.debug("Found matching feeditem for \(meal.id)")
-                        meal.isSoldOut = matchingItem.isSoldOut
-                    }
-                    return meal
-                }
-            } catch (let error) {
-                Logger.emealKit.log("Failed to fetch rss data, continuing without: \(String(describing: error))")
-                return meals
-            }
+            return meals
         } catch (let error) {
             Logger.emealKit.error("Failed to fetch meal data: \(String(describing: error))")
             throw .other(error)

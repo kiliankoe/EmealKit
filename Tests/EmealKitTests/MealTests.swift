@@ -85,14 +85,11 @@ class MealTests: XCTestCase {
         XCTAssertEqual(prices2.employees, 1.0)
     }
 
-    func testFeedData() async throws {
-        // Unfortunately we can't really test this with mock data since there's no way to inject anything into FeedKit.
-        let feedItems = try await Meal.rssData()
-        XCTAssertGreaterThan(feedItems.count, 0)
-    }
-
+    @available(macOS 12.0, iOS 15.0, *)
     func testSoldOut() async throws {
-        // see above
+        let meals = try await Meal.for(canteen: .alteMensa, on: Date(), session: MockURLSession(data: .meals))
+        XCTAssertEqual(meals[0].isSoldOut, true)
+        XCTAssertEqual(meals[1].isSoldOut, false)
     }
 }
 
