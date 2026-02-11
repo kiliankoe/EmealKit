@@ -90,9 +90,10 @@ extension Transaction {
         public let amount: Int
         public let price: Double
         public let totalPrice: Double
+        public let discount: Double?
         public let rating: Int // ?
 
-        public init(clientID: Int, id: Int, transactionID: String, positionID: Int, name: String, amount: Int, price: Double, totalPrice: Double, rating: Int) {
+        public init(clientID: Int, id: Int, transactionID: String, positionID: Int, name: String, amount: Int, price: Double, totalPrice: Double, discount: Double, rating: Int) {
             self.clientID = clientID
             self.id = id
             self.transactionID = transactionID
@@ -101,6 +102,7 @@ extension Transaction {
             self.amount = amount
             self.price = price
             self.totalPrice = totalPrice
+            self.discount = discount
             self.rating = rating
         }
 
@@ -113,6 +115,7 @@ extension Transaction {
             case amount = "menge"
             case price = "epreis"
             case totalPrice = "gpreis"
+            case discount = "rabatt"
             case rating = "bewertung"
         }
     }

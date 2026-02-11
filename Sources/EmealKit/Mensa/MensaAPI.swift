@@ -19,8 +19,29 @@ extension Canteen {
         do {
             let (data, _) = try await session.data(from: URL.Mensa.canteens)
             print(String(data: data, encoding: .utf8)!)
-            let canteens = try JSONDecoder().decode([Canteen].self, from: data)
+            var canteens = try JSONDecoder().decode([Canteen].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(canteens.count) canteens")
+            
+            // Fetch and match opening hours
+            do {
+                let openingHoursList = try await OpeningHoursScraper.fetchOpeningHours(session: session)
+                let openingHoursMap = Dictionary(uniqueKeysWithValues: openingHoursList.map { ($0.canteenName, $0) })
+                
+                for i in 0..<canteens.count {
+                    // Try to match using CanteenId.from
+                    if let canteenId = CanteenId.from(name: canteens[i].name),
+                       let openingHours = openingHoursMap.values.first(where: { hours in
+                           CanteenId.from(name: hours.canteenName) == canteenId
+                       }) {
+                        canteens[i].openingHours = openingHours
+                    }
+                }
+                
+                Logger.emealKit.debug("Matched opening hours for \(canteens.filter { $0.openingHours != nil }.count) canteens")
+            } catch {
+                Logger.emealKit.error("Failed to fetch/match opening hours: \(String(describing: error))")
+            }
+            
             return canteens
         } catch (let error) {
             Logger.emealKit.error("Failed to fetch canteen data: \(String(describing: error))")
