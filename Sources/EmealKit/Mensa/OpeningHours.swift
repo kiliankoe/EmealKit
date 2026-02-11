@@ -14,14 +14,21 @@ public struct OpeningHours: Equatable, Codable {
     }
     
     /// Returns the applicable time slots for a given date.
-    /// If any changed hours have an active date range, only those are used;
-    /// otherwise falls back to regular hours.
+    /// If active changed hours provide parseable timing information or explicit closure notices,
+    /// they override regular hours. Otherwise, regular hours are used as fallback.
     private func activeSlots(on date: Date) -> [TimeSlot] {
-        let hasActiveChangedHours = changedHours.contains { slot in
+        let activeChangedHours = changedHours.filter { slot in
             guard let range = slot.dateRange else { return true }
             return range.isActive(on: date)
         }
-        return hasActiveChangedHours ? changedHours : regularHours
+
+        guard !activeChangedHours.isEmpty else { return regularHours }
+
+        let hasActionableChangedHours = activeChangedHours.contains { slot in
+            !slot.parsedHours.isEmpty || slot.isExplicitClosureNotice
+        }
+
+        return hasActionableChangedHours ? activeChangedHours : regularHours
     }
 
     /// Check if the canteen is open at a specific date/time
@@ -90,6 +97,11 @@ public struct OpeningHours: Equatable, Codable {
             self.hoursText = hoursText
             self.isRegular = isRegular
             self.parsedHours = parsedHours
+        }
+
+        var isExplicitClosureNotice: Bool {
+            let lowerText = hoursText.lowercased()
+            return lowerText.contains("geschlossen") || lowerText.contains("closed")
         }
         
         /// Check if this time slot is active and open at a specific date/time

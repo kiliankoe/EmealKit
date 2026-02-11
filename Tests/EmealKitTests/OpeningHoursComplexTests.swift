@@ -124,4 +124,77 @@ final class OpeningHoursComplexTests: XCTestCase {
         let closingTime = complexHours.closingTime(from: now)
         XCTAssertNil(closingTime.0)
     }
+
+    func testUnparseableChangedHoursFallBackToRegularHours() {
+        let regularSlot = OpeningHours.TimeSlot(
+            area: "Regular",
+            dateRange: nil,
+            hoursText: "Mo 11:00-14:00",
+            isRegular: true,
+            parsedHours: [
+                OpeningHours.WeekdayHours(
+                    days: [.monday],
+                    openTime: OpeningHours.TimeOfDay(hour: 11, minute: 0),
+                    closeTime: OpeningHours.TimeOfDay(hour: 14, minute: 0)
+                )
+            ]
+        )
+
+        let informationalChangedSlot = OpeningHours.TimeSlot(
+            area: "Prufungszeit",
+            dateRange: nil,
+            hoursText: "Sehr geehrte Gaste, nur bis 15:00 Uhr geoffnet, Mittagstisch bis 14:00 Uhr.",
+            isRegular: false,
+            parsedHours: []
+        )
+
+        let openingHours = OpeningHours(
+            canteenName: "Fallback Test",
+            regularHours: [regularSlot],
+            changedHours: [informationalChangedSlot]
+        )
+
+        XCTAssertTrue(openingHours.hasChangedHours(at: monday(hour: 12)))
+        XCTAssertTrue(openingHours.isOpen(at: monday(hour: 12)))
+
+        let opening = openingHours.openingTime(from: monday(hour: 9))
+        let components = calendar.dateComponents([.hour, .minute], from: opening.0!)
+        XCTAssertEqual(components.hour, 11)
+        XCTAssertEqual(components.minute, 0)
+    }
+
+    func testExplicitClosureChangedHoursOverrideRegularHours() {
+        let regularSlot = OpeningHours.TimeSlot(
+            area: "Regular",
+            dateRange: nil,
+            hoursText: "Mo 11:00-14:00",
+            isRegular: true,
+            parsedHours: [
+                OpeningHours.WeekdayHours(
+                    days: [.monday],
+                    openTime: OpeningHours.TimeOfDay(hour: 11, minute: 0),
+                    closeTime: OpeningHours.TimeOfDay(hour: 14, minute: 0)
+                )
+            ]
+        )
+
+        let closedChangedSlot = OpeningHours.TimeSlot(
+            area: "Ferien",
+            dateRange: nil,
+            hoursText: "Die Mensa ist geschlossen.",
+            isRegular: false,
+            parsedHours: []
+        )
+
+        let openingHours = OpeningHours(
+            canteenName: "Closure Test",
+            regularHours: [regularSlot],
+            changedHours: [closedChangedSlot]
+        )
+
+        XCTAssertTrue(openingHours.hasChangedHours(at: monday(hour: 12)))
+        XCTAssertFalse(openingHours.isOpen(at: monday(hour: 12)))
+        XCTAssertNil(openingHours.openingTime(from: monday(hour: 12)).0)
+        XCTAssertNil(openingHours.closingTime(from: monday(hour: 12)).0)
+    }
 }
