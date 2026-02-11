@@ -18,11 +18,12 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/alexaubry/HTMLString.git", from: "5.0.0"),
         .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.2"),
     ],
     targets: [
         .target(
             name: "EmealKit",
-            dependencies: ["HTMLString", "Regex"]),
+            dependencies: ["HTMLString", "Regex", "SwiftSoup"]),
         .testTarget(
             name: "EmealKitTests",
             dependencies: ["EmealKit"]),

@@ -131,13 +131,15 @@ public struct Cardservice {
         session: URLSession = .shared,
         completion: @escaping (Result<[Transaction], CardserviceError>) -> Void
     ) {
+        let endDatePlusOne = Calendar.current.date(byAdding: .day, value: 1, to: end) ?? end
+        
         guard
             let transactionURL = URL(
-                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(end.dayMonthYear)",
+                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(endDatePlusOne.dayMonthYear)",
                 relativeTo: URL.Cardservice.transactions
             ),
             let positionsURL = URL(
-                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(end.dayMonthYear)",
+                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(endDatePlusOne.dayMonthYear)",
                 relativeTo: URL.Cardservice.transactionPositions
             )
         else {
@@ -148,33 +150,52 @@ public struct Cardservice {
         let transactionRequest = URLRequest(url: transactionURL)
         let positionsRequest = URLRequest(url: positionsURL)
 
-        // TODO: Both requests here should fire simultaneously and be synchronized afterwards. They don't depend on each
-        // other.
-        Logger.emealKit.debug("Fetching transactions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
+        Logger.emealKit.debug("Fetching transactions and positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(endDatePlusOne.dayMonthYear)")
+        
+        let dispatchGroup = DispatchGroup()
+        var transactionsResult: Result<[TransactionService], CardserviceError>?
+        var positionsResult: Result<[Transaction.Position], CardserviceError>?
+        
+        dispatchGroup.enter()
         session.cardserviceDataTask(with: transactionRequest, session: session) {
-            (transactionsResult: Result<[TransactionService], CardserviceError>) in
-            Logger.emealKit.debug("Fetching positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
-            session.cardserviceDataTask(with: positionsRequest, session: session) {
-                (positionsResult: Result<[Transaction.Position], CardserviceError>) in
-                switch (transactionsResult, positionsResult) {
-                case (.failure(let error), _):
-                    Logger.emealKit.error("Failed to fetch transaction data: \(String(describing: error))")
-                    completion(.failure(error))
-                case (_, .failure(let error)):
-                    Logger.emealKit.error("Failed to fetch position data: \(String(describing: error))")
-                    completion(.failure(error))
-                case (.success(let services), .success(let positions)):
-                    do {
-                        var transactions = try Transaction.create(from: services, filtering: positions)
-                        transactions.sort { lhs, rhs in
-                            return lhs.date < rhs.date
-                        }
-                        Logger.emealKit.debug("Succesfully fetched transactions")
-                        completion(.success(transactions))
-                    } catch let error {
-                        Logger.emealKit.error("Failed to create transaction data: \(String(describing: error))")
-                        completion(.failure(.decoding(.other(error))))
+            (result: Result<[TransactionService], CardserviceError>) in
+            transactionsResult = result
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        session.cardserviceDataTask(with: positionsRequest, session: session) {
+            (result: Result<[Transaction.Position], CardserviceError>) in
+            positionsResult = result
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            guard let transactionsResult = transactionsResult,
+                  let positionsResult = positionsResult else {
+                Logger.emealKit.error("Failed to fetch data: missing results")
+                completion(.failure(.invalidURL))
+                return
+            }
+            
+            switch (transactionsResult, positionsResult) {
+            case (.failure(let error), _):
+                Logger.emealKit.error("Failed to fetch transaction data: \(String(describing: error))")
+                completion(.failure(error))
+            case (_, .failure(let error)):
+                Logger.emealKit.error("Failed to fetch position data: \(String(describing: error))")
+                completion(.failure(error))
+            case (.success(let services), .success(let positions)):
+                do {
+                    var transactions = try Transaction.create(from: services, filtering: positions)
+                    transactions.sort { lhs, rhs in
+                        return lhs.date < rhs.date
                     }
+                    Logger.emealKit.debug("Succesfully fetched transactions")
+                    completion(.success(transactions))
+                } catch let error {
+                    Logger.emealKit.error("Failed to create transaction data: \(String(describing: error))")
+                    completion(.failure(.decoding(.other(error))))
                 }
             }
         }
