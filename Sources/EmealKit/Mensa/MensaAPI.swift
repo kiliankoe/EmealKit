@@ -18,7 +18,6 @@ extension Canteen {
         Logger.emealKit.debug("Fetching all canteens")
         do {
             let (data, _) = try await session.data(from: URL.Mensa.canteens)
-            print(String(data: data, encoding: .utf8)!)
             var canteens = try JSONDecoder().decode([Canteen].self, from: data)
             Logger.emealKit.debug("Successfully fetched \(canteens.count) canteens")
             

@@ -93,7 +93,7 @@ extension Transaction {
         public let discount: Double?
         public let rating: Int // ?
 
-        public init(clientID: Int, id: Int, transactionID: String, positionID: Int, name: String, amount: Int, price: Double, totalPrice: Double, discount: Double, rating: Int) {
+        public init(clientID: Int, id: Int, transactionID: String, positionID: Int, name: String, amount: Int, price: Double, totalPrice: Double, discount: Double? = nil, rating: Int) {
             self.clientID = clientID
             self.id = id
             self.transactionID = transactionID

@@ -316,15 +316,6 @@ struct OpeningHoursParser {
         let startYear = calendar.component(.year, from: start)
         let endYear = calendar.component(.year, from: end)
         
-        /*if start > end && startYear == endYear {
-            var components = calendar.dateComponents([.day, .month], from: start)
-            components.year = endYear + 1
-            components.timeZone = TimeZone(identifier: "Europe/Berlin")
-            if let newStart = calendar.date(from: components) {
-                return (newStart, end)
-            }
-        }*/
-        
         // If explicit end year provided (e.g. 2026) and start inferred current year (e.g. 2025),
         // update start to match end year.
         if endYear != startYear || (endYear == startYear && start > end) {

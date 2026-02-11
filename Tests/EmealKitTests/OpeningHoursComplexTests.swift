@@ -78,66 +78,50 @@ final class OpeningHoursComplexTests: XCTestCase {
     
     func testScenarioAt0900() {
         // At 09:00:
-        // Slot 1 (08-16) is OPEN
-        // Slot 2 (10-13) is CLOSED
-        // Slot 3 (10-13) is CLOSED and the only relevant one (changedHours)
-        // Next event: Slot 3 opens at 10:00
-        
+        // Changed hours (Slot 3, 11-13) override regular hours
+        // Slot 3 is closed → canteen is closed
+        // Next opening: Slot 3 at 11:00
+
         let now = monday(hour: 9)
-        
+
+        XCTAssertFalse(complexHours.isOpen(at: now))
+
         let openingTime = complexHours.openingTime(from: now)
-        XCTAssertNotNil(openingTime)
-        
-        // Should be 10:00
+        XCTAssertNotNil(openingTime.0)
+
         let components = calendar.dateComponents([.hour, .minute], from: openingTime.0!)
-        XCTAssertEqual(components.hour, 10)
+        XCTAssertEqual(components.hour, 11)
         XCTAssertEqual(components.minute, 0)
-        
-        // Tendency should be increasing (because 10:00 open is sooner than 16:00 close)
-        let open = complexHours.isOpen(at: now)
-        XCTAssertEqual(open, false)
     }
     
     func testScenarioAt1100() {
         // At 11:00:
-        // Slot 1 (08-16) is OPEN
-        // Slot 2 (10-13) is OPEN
-        // Slot 3 (10-13) is OPEN and the only relevant one (changedHours)
-        // Next event: Slot 3 closes at 13:00
-        
+        // Changed hours (Slot 3, 11-13) override regular hours
+        // Slot 3 is open → canteen is open, closes at 13:00
+
         let now = monday(hour: 11)
-        
-        // Closing time should be 13:00 (first thing to close)
+
+        XCTAssertTrue(complexHours.isOpen(at: now))
+
         let closingTime = complexHours.closingTime(from: now)
-        XCTAssertNotNil(closingTime)
-        
+        XCTAssertNotNil(closingTime.0)
+
         let components = calendar.dateComponents([.hour, .minute], from: closingTime.0!)
         XCTAssertEqual(components.hour, 13)
         XCTAssertEqual(components.minute, 0)
-        
-        // Tendency should be decreasing
-        let open = complexHours.isOpen(at: now)
-        XCTAssertEqual(open, true)
     }
     
     func testScenarioAt1400() {
         // At 14:00:
-        // Slot 1 (08-16) is OPEN
-        // Slot 2 (10-13) is CLOSED
-        // Slot 3 (10-13) is CLOSED and the only relevant one (changedHours)
-        // Next event: Slot 1 normally closes at 16:00 but the canteen is already closed
-        
+        // Changed hours (Slot 3, 11-13) override regular hours
+        // Slot 3 is closed → canteen is closed
+        // No closing time (nothing is open)
+
         let now = monday(hour: 14)
-        
+
+        XCTAssertFalse(complexHours.isOpen(at: now))
+
         let closingTime = complexHours.closingTime(from: now)
-        XCTAssertNotNil(closingTime)
-        
-        let components = calendar.dateComponents([.hour, .minute], from: closingTime.0!)
-        XCTAssertEqual(components.hour, 16)
-        XCTAssertEqual(components.minute, 0)
-        
-        // Tendency should be decreasing (next event is 16:00 close)
-        let open = complexHours.isOpen(at: now)
-        XCTAssertEqual(open, false)
+        XCTAssertNil(closingTime.0)
     }
 }

@@ -13,93 +13,67 @@ public struct OpeningHours: Equatable, Codable {
         self.changedHours = changedHours
     }
     
+    /// Returns the applicable time slots for a given date.
+    /// If any changed hours have an active date range, only those are used;
+    /// otherwise falls back to regular hours.
+    private func activeSlots(on date: Date) -> [TimeSlot] {
+        let hasActiveChangedHours = changedHours.contains { slot in
+            guard let range = slot.dateRange else { return true }
+            return range.isActive(on: date)
+        }
+        return hasActiveChangedHours ? changedHours : regularHours
+    }
+
     /// Check if the canteen is open at a specific date/time
     public func isOpen(at date: Date = Date()) -> Bool {
-        // Check changed hours first (they override regular hours)
-        for slot in changedHours {
-            if slot.isOpen(at: date) {
-                return true
-            }
-        }
-        
-        if (!changedHours.isEmpty) {
-            return false
-        }
-        
-        // Fall back to regular hours
-        for slot in regularHours {
-            if slot.isOpen(at: date) {
-                return true
-            }
-        }
-        
-        return false
+        activeSlots(on: date).contains { $0.isOpen(at: date) }
     }
-    
+
     /// Check if there are changed opening hours active at a specific date
     public func hasChangedHours(at date: Date = Date()) -> Bool {
-        for slot in changedHours {
-            if let dateRange = slot.dateRange, dateRange.isActive(on: date) {
-                return true
-            }
+        changedHours.contains { slot in
+            guard let range = slot.dateRange else { return true }
+            return range.isActive(on: date)
         }
-        return false
     }
     
     /// Get the time when the canteen closes next (if currently open)
-    /// Returns the EARLIEST closing time of any open service (Urgency).
+    /// Returns the EARLIEST closing time of any open service.
     public func closingTime(from date: Date = Date()) -> (Date?, String?) {
-        var activeSlots: [TimeSlot] = []
-        let collectSlots = { (slot: TimeSlot) in
-            if let dateRange = slot.dateRange, !dateRange.isActive(on: date) { return }
-            activeSlots.append(slot)
-        }
-        changedHours.forEach(collectSlots)
-        regularHours.forEach(collectSlots)
-        
-        let openSlots = activeSlots.filter { $0.isOpen(at: date) }
-        
-        // Sort by closing time (Earliest closing time first)
+        let slots = activeSlots(on: date)
+
+        let openSlots = slots.filter { $0.isOpen(at: date) }
         let sortedSlots = openSlots.sorted { slot1, slot2 in
             guard let close1 = slot1.closingTime(from: date), let close2 = slot2.closingTime(from: date) else { return false }
             return close1 < close2
         }
-        
+
         if let bestSlot = sortedSlots.first {
-             return (bestSlot.closingTime(from: date), bestSlot.area)
+            return (bestSlot.closingTime(from: date), bestSlot.area)
         }
-        
+
         return (nil, nil)
     }
     
     /// Get the time when the canteen opens next (if currently closed)
     /// Returns the EARLIEST opening time of any service.
     public func openingTime(from date: Date = Date()) -> (Date?, String?) {
+        let slots = activeSlots(on: date)
+
         var candidates: [(date: Date, slot: TimeSlot)] = []
-        
-        let checkSlots = { (slots: [TimeSlot]) in
-            for slot in slots {
-                if let range = slot.dateRange, !range.isActive(on: date) { continue }
-                // Use the modified openingTime which finds the *closest* next opening time
-                // This will handle opening later today vs tomorrow correctly
-                if let openTime = slot.openingTime(from: date) {
-                    candidates.append((openTime, slot))
-                }
+        for slot in slots {
+            if let range = slot.dateRange, !range.isActive(on: date) { continue }
+            if let openTime = slot.openingTime(from: date) {
+                candidates.append((openTime, slot))
             }
         }
-        
-        checkSlots(changedHours)
-        checkSlots(regularHours)
-        
-        guard !candidates.isEmpty else { return (nil, nil) }
-        
-        // Sort by time (earliest wins)
+
         candidates.sort { $0.date < $1.date }
-        
+
         if let best = candidates.first {
             return (best.date, best.slot.area)
         }
-        
+
         return (nil, nil)
     }
     
@@ -300,60 +274,37 @@ public struct OpeningHours: Equatable, Codable {
     /// Get statuses for all active services at a specific date
     public func serviceStatuses(at date: Date = Date()) -> [ServiceStatus] {
         var statuses: [ServiceStatus] = []
-        
-        let processSlots = { (slots: [TimeSlot]) in
-            for slot in slots {
-                if let range = slot.dateRange, !range.isActive(on: date) { continue }
-                
-                if slot.isOpen(at: date) {
-                    if let closeDate = slot.closingTime(from: date) {
-                        statuses.append(ServiceStatus(
-                            area: slot.area,
-                            isOpen: true,
-                            timeUntilChange: closeDate.timeIntervalSince(date),
-                            changeTime: closeDate,
-                            totalDuration: slot.parsedHours.first(where: { $0.isOpen(at: date) })
-                                .map { $0.closeTime.totalMinutes - $0.openTime.totalMinutes }
-                                .map { TimeInterval($0 * 60) } ?? 3600
-                        ))
-                    }
-                } else {
-                    if let openDate = slot.openingTime(from: date) {
-                         statuses.append(ServiceStatus(
-                            area: slot.area,
-                            isOpen: false,
-                            timeUntilChange: openDate.timeIntervalSince(date),
-                            changeTime: openDate,
-                            totalDuration: 0 // Not relevant for closed
-                        ))
-                    }
-                }
-            }
-        }
-        
-        processSlots(changedHours)
-        processSlots(regularHours)
-        
-        // Deduplicate by area (prefer open ones, then earlier ones)
-        // If we have "Lunch" in changed and regular, we likely only want one.
-        var uniqueStatuses: [String: ServiceStatus] = [:]
-        for status in statuses {
-            if let existing = uniqueStatuses[status.area] {
-                // If existing is closed and new is open, replace
-                if !existing.isOpen && status.isOpen {
-                    uniqueStatuses[status.area] = status
-                }
-                // If both open/closed, take the one with earlier change time (more urgent)
-                else if existing.isOpen == status.isOpen && status.timeUntilChange < existing.timeUntilChange {
-                    uniqueStatuses[status.area] = status
+
+        for slot in activeSlots(on: date) {
+            if let range = slot.dateRange, !range.isActive(on: date) { continue }
+
+            if slot.isOpen(at: date) {
+                if let closeDate = slot.closingTime(from: date) {
+                    statuses.append(ServiceStatus(
+                        area: slot.area,
+                        isOpen: true,
+                        timeUntilChange: closeDate.timeIntervalSince(date),
+                        changeTime: closeDate,
+                        totalDuration: slot.parsedHours.first(where: { $0.isOpen(at: date) })
+                            .map { $0.closeTime.totalMinutes - $0.openTime.totalMinutes }
+                            .map { TimeInterval($0 * 60) } ?? 3600
+                    ))
                 }
             } else {
-                uniqueStatuses[status.area] = status
+                if let openDate = slot.openingTime(from: date) {
+                    statuses.append(ServiceStatus(
+                        area: slot.area,
+                        isOpen: false,
+                        timeUntilChange: openDate.timeIntervalSince(date),
+                        changeTime: openDate,
+                        totalDuration: 0
+                    ))
+                }
             }
         }
-        
-        return Array(uniqueStatuses.values).sorted {
-            if $0.isOpen != $1.isOpen { return $0.isOpen } // Open first
+
+        return statuses.sorted {
+            if $0.isOpen != $1.isOpen { return $0.isOpen }
             return $0.timeUntilChange < $1.timeUntilChange
         }
     }

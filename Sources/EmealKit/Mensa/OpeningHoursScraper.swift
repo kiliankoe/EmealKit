@@ -34,7 +34,7 @@ struct OpeningHoursScraper {
         Logger.emealKit.debug("Found \(cards.count) canteen cards")
         
         for card in cards {
-            if let openingHours = try parseCanteenCard(card) {
+            if let openingHours = try? parseCanteenCard(card) {
                 result.append(openingHours)
             }
         }
