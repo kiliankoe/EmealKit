@@ -2,6 +2,12 @@ import XCTest
 @testable import EmealKit
 
 final class OpeningHoursParserTests: XCTestCase {
+
+    private var berlinCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+        return calendar
+    }
     
     // MARK: - Weekday Parsing Tests
     
@@ -179,7 +185,7 @@ final class OpeningHoursParserTests: XCTestCase {
         XCTAssertNotNil(range1?.from)
         XCTAssertNotNil(range1?.to)
         
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         if let from = range1?.from {
             XCTAssertEqual(calendar.component(.day, from: from), 9)
             XCTAssertEqual(calendar.component(.month, from: from), 2)
@@ -224,7 +230,7 @@ final class OpeningHoursParserTests: XCTestCase {
     }
     
     func testDateRangeIsActive() throws {
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         let today = Date()
         
         // Create a range that includes today

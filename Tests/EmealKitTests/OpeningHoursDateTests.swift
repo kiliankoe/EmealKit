@@ -2,6 +2,12 @@ import XCTest
 @testable import EmealKit
 
 final class OpeningHoursDateTests: XCTestCase {
+
+    private var berlinCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+        return calendar
+    }
     
     func testIsOpenWithDate() {
         // Create opening hours: Mo-Fr 11:00-14:00
@@ -20,7 +26,7 @@ final class OpeningHoursDateTests: XCTestCase {
         components.minute = 0
         components.timeZone = TimeZone(identifier: "Europe/Berlin")
         
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         let testDate = calendar.date(from: components)!
         
         // Should be open
@@ -60,7 +66,7 @@ final class OpeningHoursDateTests: XCTestCase {
         components.minute = 0
         components.timeZone = TimeZone(identifier: "Europe/Berlin")
         
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         let testDate = calendar.date(from: components)!
         
         let closingTime = hours.closingTime(from: testDate)
@@ -88,7 +94,7 @@ final class OpeningHoursDateTests: XCTestCase {
         components.minute = 0
         components.timeZone = TimeZone(identifier: "Europe/Berlin")
         
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         let testDate = calendar.date(from: components)!
         
         let openingTime = hours.openingTime(from: testDate)
@@ -117,7 +123,7 @@ final class OpeningHoursDateTests: XCTestCase {
         components.minute = 0
         components.timeZone = TimeZone(identifier: "Europe/Berlin")
         
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         let testDate = calendar.date(from: components)!
         
         let openingTime = hours.openingTime(from: testDate)
@@ -131,7 +137,7 @@ final class OpeningHoursDateTests: XCTestCase {
     }
     
     func testWeekdayFromDate() {
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         
         // Tuesday, January 27, 2026
         var components = DateComponents()
@@ -162,7 +168,7 @@ final class OpeningHoursDateTests: XCTestCase {
     }
     
     func testTimeOfDayFromDate() {
-        let calendar = Calendar.current
+        let calendar = berlinCalendar
         
         var components = DateComponents()
         components.year = 2026
