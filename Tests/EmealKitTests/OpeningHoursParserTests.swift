@@ -250,6 +250,21 @@ final class OpeningHoursParserTests: XCTestCase {
         )
         XCTAssertFalse(futureRange.isActive(on: today))
     }
+
+    func testDateRangeEndDateIsInclusiveByDay() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+
+        let from = calendar.date(from: DateComponents(year: 2026, month: 2, day: 9, hour: 0, minute: 0))!
+        let to = calendar.date(from: DateComponents(year: 2026, month: 2, day: 20, hour: 0, minute: 0))!
+        let range = OpeningHours.DateRange(from: from, to: to, text: "09.02.26 - 20.02.26")
+
+        let onEndDayNoon = calendar.date(from: DateComponents(year: 2026, month: 2, day: 20, hour: 12, minute: 0))!
+        let dayAfter = calendar.date(from: DateComponents(year: 2026, month: 2, day: 21, hour: 0, minute: 1))!
+
+        XCTAssertTrue(range.isActive(on: onEndDayNoon))
+        XCTAssertFalse(range.isActive(on: dayAfter))
+    }
     
     // MARK: - TimeOfDay Tests
     

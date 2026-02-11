@@ -312,7 +312,7 @@ struct OpeningHoursParser {
     static func inferYear(start: Date?, end: Date?) -> (Date?, Date?) {
         guard let start = start, let end = end else { return (start, end) }
         
-        let calendar = Calendar.current
+        let calendar = OpeningHoursDateContext.calendar
         let startYear = calendar.component(.year, from: start)
         let endYear = calendar.component(.year, from: end)
         
@@ -321,7 +321,7 @@ struct OpeningHoursParser {
         if endYear != startYear || (endYear == startYear && start > end) {
             var components = calendar.dateComponents([.day, .month], from: start)
             components.year = endYear - 1
-            components.timeZone = TimeZone(identifier: "Europe/Berlin")
+            components.timeZone = OpeningHoursDateContext.berlinTimeZone
             if let newStart = calendar.date(from: components) {
                 return (newStart, end)
             }
@@ -424,7 +424,7 @@ struct OpeningHoursParser {
         } else {
             // No year provided - assume current or next year based on month
             let now = Date()
-            let calendar = Calendar.current
+            let calendar = OpeningHoursDateContext.calendar
             let currentYear = calendar.component(.year, from: now)
             let currentMonth = calendar.component(.month, from: now)
             
@@ -440,8 +440,8 @@ struct OpeningHoursParser {
         dateComponents.day = day
         dateComponents.month = month
         dateComponents.year = year
-        dateComponents.timeZone = TimeZone(identifier: "Europe/Berlin")
+        dateComponents.timeZone = OpeningHoursDateContext.berlinTimeZone
         
-        return Calendar.current.date(from: dateComponents)
+        return OpeningHoursDateContext.calendar.date(from: dateComponents)
     }
 }

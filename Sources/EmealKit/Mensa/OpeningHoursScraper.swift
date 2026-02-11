@@ -34,8 +34,12 @@ struct OpeningHoursScraper {
         Logger.emealKit.debug("Found \(cards.count) canteen cards")
         
         for card in cards {
-            if let openingHours = try? parseCanteenCard(card) {
-                result.append(openingHours)
+            do {
+                if let openingHours = try parseCanteenCard(card) {
+                    result.append(openingHours)
+                }
+            } catch {
+                Logger.emealKit.error("Failed parsing opening-hours card '\(cardName(from: card))': \(String(describing: error))")
             }
         }
         
@@ -135,5 +139,17 @@ struct OpeningHoursScraper {
             regularHours: regularHours,
             changedHours: changedHours
         )
+    }
+
+    private static func cardName(from card: Element) -> String {
+        guard
+            let header = try? card.select("h5.card-header").first(),
+            let rawName = try? header.text()
+        else {
+            return "<unknown>"
+        }
+
+        let name = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return name.isEmpty ? "<unknown>" : name
     }
 }

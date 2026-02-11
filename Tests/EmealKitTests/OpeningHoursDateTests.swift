@@ -145,6 +145,21 @@ final class OpeningHoursDateTests: XCTestCase {
         
         XCTAssertEqual(weekday, .tuesday)
     }
+
+    func testIsOpenUsesBerlinTimezone() {
+        let hours = OpeningHours.WeekdayHours(
+            days: [.monday, .tuesday, .wednesday, .thursday, .friday],
+            openTime: OpeningHours.TimeOfDay(hour: 11, minute: 0),
+            closeTime: OpeningHours.TimeOfDay(hour: 14, minute: 0)
+        )
+
+        // 10:30 UTC is 11:30 in Berlin (CET) on this date.
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        let date = formatter.date(from: "2026-01-26T10:30:00Z")!
+
+        XCTAssertTrue(hours.isOpen(at: date))
+    }
     
     func testTimeOfDayFromDate() {
         let calendar = Calendar.current

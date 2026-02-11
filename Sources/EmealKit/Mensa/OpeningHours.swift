@@ -162,8 +162,10 @@ public struct OpeningHours: Equatable, Codable {
         }
         
         public func isActive(on date: Date = Date()) -> Bool {
-            if let from = from, date < from { return false }
-            if let to = to, date > to { return false }
+            let calendar = OpeningHoursDateContext.calendar
+            let day = calendar.startOfDay(for: date)
+            if let from = from, day < calendar.startOfDay(for: from) { return false }
+            if let to = to, day > calendar.startOfDay(for: to) { return false }
             return true
         }
     }
@@ -188,7 +190,7 @@ public struct OpeningHours: Equatable, Codable {
         
         /// Check if open at a specific date/time
         public func isOpen(at date: Date = Date()) -> Bool {
-            let calendar = Calendar.current
+            let calendar = OpeningHoursDateContext.calendar
             guard let weekday = Weekday.from(date: date, calendar: calendar) else { return false }
             let time = TimeOfDay.from(date: date, calendar: calendar)
             return isOpen(on: weekday, at: time)
@@ -198,18 +200,18 @@ public struct OpeningHours: Equatable, Codable {
         public func closingTime(from date: Date = Date()) -> Date? {
             guard isOpen(at: date) else { return nil }
             
-            let calendar = Calendar.current
+            let calendar = OpeningHoursDateContext.calendar
             var components = calendar.dateComponents([.year, .month, .day], from: date)
             components.hour = closeTime.hour
             components.minute = closeTime.minute
-            components.timeZone = TimeZone(identifier: "Europe/Berlin")
+            components.timeZone = OpeningHoursDateContext.berlinTimeZone
             
             return calendar.date(from: components)
         }
         
         /// Get next opening time from given date
         public func openingTime(from date: Date = Date()) -> Date? {
-            let calendar = Calendar.current
+            let calendar = OpeningHoursDateContext.calendar
             let currentWeekday = Weekday.from(date: date, calendar: calendar)
             let currentTime = TimeOfDay.from(date: date, calendar: calendar)
             
@@ -218,7 +220,7 @@ public struct OpeningHours: Equatable, Codable {
                 var components = calendar.dateComponents([.year, .month, .day], from: date)
                 components.hour = openTime.hour
                 components.minute = openTime.minute
-                components.timeZone = TimeZone(identifier: "Europe/Berlin")
+                components.timeZone = OpeningHoursDateContext.berlinTimeZone
                 return calendar.date(from: components)
             }
             
@@ -233,7 +235,7 @@ public struct OpeningHours: Equatable, Codable {
                 var components = calendar.dateComponents([.year, .month, .day], from: futureDate)
                 components.hour = openTime.hour
                 components.minute = openTime.minute
-                components.timeZone = TimeZone(identifier: "Europe/Berlin")
+                components.timeZone = OpeningHoursDateContext.berlinTimeZone
                 
                 return calendar.date(from: components)
             }
