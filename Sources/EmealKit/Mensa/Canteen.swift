@@ -52,6 +52,7 @@ public struct Canteen: Identifiable, Equatable, Decodable {
 }
 
 public enum CanteenId: Int, CaseIterable {
+    case neueMensa = 2
     case alteMensa = 4
     case mensaReichenbachstraße = 6
     case mensologie = 8
@@ -82,6 +83,8 @@ public enum CanteenId: Int, CaseIterable {
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         switch name {
+        case "neue":
+            return .neueMensa
         case "alte", "mommsa", "brat2", "bratquadrat":
             return .alteMensa
         case "uboot", "bio", "u-boot":
