@@ -19,22 +19,10 @@ public struct Cardservice {
         session: URLSession = .shared,
         completion: @escaping (Result<Cardservice, CardserviceError>) -> Void
     ) {
-        let trimmedUsername = username.trimmingCharacters(in: .whitespaces)
-        guard let url = URL(string: "?karteNr=\(trimmedUsername)&format=JSON&datenformat=JSON",
-                            relativeTo: URL.Cardservice.login) else {
+        guard let request = loginRequest(username: username, password: password) else {
             completion(.failure(.invalidURL))
             return
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let data = """
-        {
-          "BenutzerID": "\(username)",
-          "Passwort": "\(password)"
-        }
-        """.data(using: .utf8)
-        request.httpBody = data
 
         Logger.emealKit.debug("Performing Cardservice login for \(username, privacy: .private)")
         session.cardserviceDataTask(with: request, session: session) {
@@ -54,6 +42,33 @@ public struct Cardservice {
                 completion(.success(service))
             }
         }
+    }
+
+    private struct LoginBody: Encodable {
+        let BenutzerID: String
+        let Passwort: String
+    }
+
+    static func loginRequest(username: String, password: String) -> URLRequest? {
+        guard var components = URLComponents(url: URL.Cardservice.login, resolvingAgainstBaseURL: true) else {
+            return nil
+        }
+        components.queryItems = [
+            URLQueryItem(name: "karteNr", value: username.trimmingCharacters(in: .whitespaces)),
+            URLQueryItem(name: "format", value: "JSON"),
+            URLQueryItem(name: "datenformat", value: "JSON"),
+        ]
+        guard
+            let url = components.url,
+            let body = try? JSONEncoder().encode(LoginBody(BenutzerID: username, Passwort: password))
+        else {
+            return nil
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+        return request
     }
 
     /// Authenticate against the Cardservice.
