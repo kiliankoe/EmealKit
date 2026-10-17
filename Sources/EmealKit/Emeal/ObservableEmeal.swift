@@ -1,23 +1,25 @@
-#if canImport(CoreNFC)
-#if canImport(Combine)
-import Combine
+#if canImport(CoreNFC) && canImport(Observation)
+import Observation
 
-public class ObservableEmeal: ObservableObject, EmealDelegate {
-    @Published public var currentBalance: Double?
-    @Published public var lastTransaction: Double?
+@available(iOS 17, macOS 14, watchOS 10, tvOS 17, *)
+@MainActor
+@Observable
+public final class ObservableEmeal: EmealDelegate {
+    public private(set) var currentBalance: Double?
+    public private(set) var lastTransaction: Double?
+    public private(set) var error: Error?
 
     public func readData(currentBalance: Double, lastTransaction: Double) {
         self.currentBalance = currentBalance
         self.lastTransaction = lastTransaction
+        self.error = nil
     }
-
-    @Published var error: Error?
 
     public func invalidate(with error: Error) {
         self.error = error
     }
 
-    private var emeal: Emeal
+    @ObservationIgnored private let emeal: Emeal
 
     public init(localizedStrings: LocalizedEmealStrings) {
         emeal = Emeal(localizedStrings: localizedStrings)
@@ -29,5 +31,4 @@ public class ObservableEmeal: ObservableObject, EmealDelegate {
         emeal.beginNFCSession()
     }
 }
-#endif
 #endif
