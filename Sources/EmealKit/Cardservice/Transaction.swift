@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Transaction: Hashable {
+public struct Transaction: Hashable, Sendable {
     public let clientID: Int
     public let id: Int
     public let transactionID: String
@@ -81,7 +81,7 @@ struct TransactionService: Codable {
 }
 
 extension Transaction {
-    public struct Position: Codable, Hashable {
+    public struct Position: Codable, Hashable, Sendable {
         public let clientID: Int
         public let id: Int
         public let transactionID: String
@@ -122,7 +122,7 @@ extension Transaction {
 }
 
 public extension Transaction {
-    enum Kind {
+    enum Kind: Sendable {
         case sale
         case cardCharge
 

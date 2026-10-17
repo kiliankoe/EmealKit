@@ -2,7 +2,7 @@ import Foundation
 import HTMLString
 import Regex
 
-public struct Meal: Identifiable, Equatable, Decodable {
+public struct Meal: Identifiable, Equatable, Decodable, Sendable {
     public var id: Int
     public var name: String
     public var notes: [String]
@@ -24,7 +24,7 @@ public struct Meal: Identifiable, Equatable, Decodable {
         case isSoldOut = "soldout"
     }
 
-    public struct Prices: Equatable, Decodable {
+    public struct Prices: Equatable, Decodable, Sendable {
         public var students: Double
         public var employees: Double
 
@@ -142,7 +142,7 @@ public struct Meal: Identifiable, Equatable, Decodable {
     }
 }
 
-public enum Diet {
+public enum Diet: Sendable {
     case vegan
     case vegetarian
 
@@ -158,7 +158,7 @@ public enum Diet {
     }
 }
 
-public enum Ingredient: String, CaseIterable, Equatable {
+public enum Ingredient: String, CaseIterable, Equatable, Sendable {
     case pork
     case beef
     case alcohol
@@ -180,7 +180,7 @@ public enum Ingredient: String, CaseIterable, Equatable {
     }
 }
 
-public enum Allergen: String, CaseIterable {
+public enum Allergen: String, CaseIterable, Sendable {
     case gluten = "A"
     case shellfish = "B"
     case eggs = "C"

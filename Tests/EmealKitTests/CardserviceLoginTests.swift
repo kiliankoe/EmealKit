@@ -32,6 +32,12 @@ class CardserviceLoginTests: XCTestCase {
         XCTAssertEqual(components.queryItems?.first { $0.name == "karteNr" }?.value, "12 3&4")
     }
 
+    func testBodyKeepsSlashesUnescaped() throws {
+        let request = try XCTUnwrap(Cardservice.loginRequest(username: "12345", password: "a/b"))
+        let body = try XCTUnwrap(request.httpBody.flatMap { String(data: $0, encoding: .utf8) })
+        XCTAssertTrue(body.contains(#""a/b""#))
+    }
+
     func testIsJSONPost() throws {
         let request = try XCTUnwrap(Cardservice.loginRequest(username: "12345", password: "secret"))
         XCTAssertEqual(request.httpMethod, "POST")

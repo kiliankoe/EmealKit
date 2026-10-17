@@ -1,4 +1,4 @@
-public struct LocalizedEmealStrings {
+public struct LocalizedEmealStrings: Sendable {
     let alertMessage: String
     let nfcReadingError: String
     let nfcConnectionError: String

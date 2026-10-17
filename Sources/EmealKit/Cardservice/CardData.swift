@@ -1,6 +1,6 @@
 import Foundation
 
-public struct CardData {
+public struct CardData: Sendable {
     public let id: Int
     public let cardNumber: String
     public let chargeAmount: Int

@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:6.0
 
 import PackageDescription
 
@@ -23,7 +23,9 @@ let package = Package(
     targets: [
         .target(
             name: "EmealKit",
-            dependencies: ["HTMLString", "Regex", "SwiftSoup"]),
+            dependencies: ["HTMLString", "Regex", "SwiftSoup"],
+            // The NFC reader in Emeal.swift doesn't compile in Swift 6 mode yet.
+            swiftSettings: [.swiftLanguageMode(.v5)]),
         .testTarget(
             name: "EmealKitTests",
             dependencies: ["EmealKit"]),

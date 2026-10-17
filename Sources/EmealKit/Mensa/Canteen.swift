@@ -4,7 +4,7 @@ import Foundation
 import CoreLocation
 #endif
 
-public struct Canteen: Identifiable, Equatable, Decodable {
+public struct Canteen: Identifiable, Equatable, Decodable, Sendable {
     public var id: Int
     public var name: String
     public var city: String
@@ -51,7 +51,7 @@ public struct Canteen: Identifiable, Equatable, Decodable {
     }
 }
 
-public enum CanteenId: Int, CaseIterable {
+public enum CanteenId: Int, CaseIterable, Sendable {
     case neueMensa = 2
     case alteMensa = 4
     case mensaReichenbachstraße = 6

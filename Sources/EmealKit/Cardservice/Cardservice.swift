@@ -1,7 +1,7 @@
 import Foundation
 import os.log
 
-public struct Cardservice {
+public struct Cardservice: Sendable {
     let username: String
     let cardnumber: String
     let authToken: String
@@ -49,18 +49,22 @@ public struct Cardservice {
         let Passwort: String
     }
 
+    // Unescaped slashes keep the body identical to what the server received before it was JSON-encoded.
+    private static let loginEncoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .withoutEscapingSlashes
+        return encoder
+    }()
+
     static func loginRequest(username: String, password: String) -> URLRequest? {
-        guard var components = URLComponents(url: URL.Cardservice.login, resolvingAgainstBaseURL: true) else {
-            return nil
-        }
-        components.queryItems = [
-            URLQueryItem(name: "karteNr", value: username.trimmingCharacters(in: .whitespaces)),
-            URLQueryItem(name: "format", value: "JSON"),
-            URLQueryItem(name: "datenformat", value: "JSON"),
-        ]
+        let url = URL.Cardservice.url(URL.Cardservice.login, query: [
+            "karteNr": username.trimmingCharacters(in: .whitespaces),
+            "format": "JSON",
+            "datenformat": "JSON",
+        ])
         guard
-            let url = components.url,
-            let body = try? JSONEncoder().encode(LoginBody(BenutzerID: username, Passwort: password))
+            let url,
+            let body = try? loginEncoder.encode(LoginBody(BenutzerID: username, Passwort: password))
         else {
             return nil
         }
@@ -90,6 +94,33 @@ public struct Cardservice {
         }
     }
 
+    func carddataURL() -> URL? {
+        URL.Cardservice.url(URL.Cardservice.carddata, query: [
+            "format": "JSON",
+            "authToken": authToken,
+            "karteNr": cardnumber,
+        ])
+    }
+
+    func transactionsURLs(begin: Date, end: Date) -> (transactions: URL, positions: URL)? {
+        // The server treats the end date as exclusive.
+        let endDatePlusOne = Calendar.current.date(byAdding: .day, value: 1, to: end) ?? end
+        let query: KeyValuePairs = [
+            "format": "JSON",
+            "authToken": authToken,
+            "karteNr": cardnumber,
+            "datumVon": begin.dayMonthYear,
+            "datumBis": endDatePlusOne.dayMonthYear,
+        ]
+        guard
+            let transactions = URL.Cardservice.url(URL.Cardservice.transactions, query: query),
+            let positions = URL.Cardservice.url(URL.Cardservice.transactionPositions, query: query)
+        else {
+            return nil
+        }
+        return (transactions, positions)
+    }
+
     /// Fetch card data associated with an account.
     ///
     /// - Parameters:
@@ -99,8 +130,7 @@ public struct Cardservice {
         session: URLSession = .shared,
         completion: @escaping (Result<[CardData], CardserviceError>) -> Void
     ) {
-        guard let url = URL(string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)",
-                            relativeTo: URL.Cardservice.carddata) else {
+        guard let url = carddataURL() else {
             completion(.failure(.invalidURL))
             return
         }
@@ -146,26 +176,15 @@ public struct Cardservice {
         session: URLSession = .shared,
         completion: @escaping (Result<[Transaction], CardserviceError>) -> Void
     ) {
-        let endDatePlusOne = Calendar.current.date(byAdding: .day, value: 1, to: end) ?? end
-        
-        guard
-            let transactionURL = URL(
-                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(endDatePlusOne.dayMonthYear)",
-                relativeTo: URL.Cardservice.transactions
-            ),
-            let positionsURL = URL(
-                string: "?format=JSON&authToken=\(self.authToken)&karteNr=\(self.cardnumber)&datumVon=\(begin.dayMonthYear)&datumBis=\(endDatePlusOne.dayMonthYear)",
-                relativeTo: URL.Cardservice.transactionPositions
-            )
-        else {
+        guard let urls = transactionsURLs(begin: begin, end: end) else {
             completion(.failure(.invalidURL))
             return
         }
 
-        let transactionRequest = URLRequest(url: transactionURL)
-        let positionsRequest = URLRequest(url: positionsURL)
+        let transactionRequest = URLRequest(url: urls.transactions)
+        let positionsRequest = URLRequest(url: urls.positions)
 
-        Logger.emealKit.debug("Fetching transactions and positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(endDatePlusOne.dayMonthYear)")
+        Logger.emealKit.debug("Fetching transactions and positions for \(self.cardnumber, privacy: .private) starting at \(begin.dayMonthYear) until \(end.dayMonthYear)")
         
         let dispatchGroup = DispatchGroup()
         var transactionsResult: Result<[TransactionService], CardserviceError>?

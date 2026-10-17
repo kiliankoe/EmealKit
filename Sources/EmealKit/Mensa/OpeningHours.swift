@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Data Models
 
-public struct OpeningHours: Equatable, Codable {
+public struct OpeningHours: Equatable, Codable, Sendable {
     public let canteenName: String
     public let regularHours: [TimeSlot]
     public let changedHours: [TimeSlot]
@@ -84,7 +84,7 @@ public struct OpeningHours: Equatable, Codable {
         return (nil, nil)
     }
     
-    public struct TimeSlot: Equatable, Codable {
+    public struct TimeSlot: Equatable, Codable, Sendable {
         public let area: String
         public let dateRange: DateRange?
         public let hoursText: String
@@ -162,7 +162,7 @@ public struct OpeningHours: Equatable, Codable {
         }
     }
     
-    public struct DateRange: Equatable, Codable {
+    public struct DateRange: Equatable, Codable, Sendable {
         public let from: Date?
         public let to: Date?
         public let text: String
@@ -182,7 +182,7 @@ public struct OpeningHours: Equatable, Codable {
         }
     }
     
-    public struct WeekdayHours: Equatable, Codable {
+    public struct WeekdayHours: Equatable, Codable, Sendable {
         public let label: String?  // e.g. "Mittagstisch im Brat²", "Cafeteria Zebradiele"
         public let days: Set<Weekday>
         public let openTime: TimeOfDay
@@ -256,7 +256,7 @@ public struct OpeningHours: Equatable, Codable {
         }
     }
     
-    public struct TimeOfDay: Equatable, Codable, Comparable {
+    public struct TimeOfDay: Equatable, Codable, Comparable, Sendable {
         public let hour: Int
         public let minute: Int
         
@@ -323,7 +323,7 @@ public struct OpeningHours: Equatable, Codable {
         }
     }
     
-    public struct ServiceStatus: Identifiable {
+    public struct ServiceStatus: Identifiable, Sendable {
         public let id = UUID()
         public let area: String
         public let isOpen: Bool
@@ -332,7 +332,7 @@ public struct OpeningHours: Equatable, Codable {
         public let totalDuration: TimeInterval
     }
     
-    public enum Weekday: String, Codable, CaseIterable, Hashable {
+    public enum Weekday: String, Codable, CaseIterable, Hashable, Sendable {
         case monday = "Mo"
         case tuesday = "Di"
         case wednesday = "Mi"

@@ -8,6 +8,17 @@ internal extension URL {
         static let carddata = URL(string: "KARTE", relativeTo: Self.apiBase)!
         static let transactions = URL(string: "TRANS", relativeTo: Self.apiBase)!
         static let transactionPositions = URL(string: "TRANSPOS", relativeTo: Self.apiBase)!
+
+        static func url(_ endpoint: URL, query: KeyValuePairs<String, String>) -> URL? {
+            guard var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: true) else {
+                return nil
+            }
+            components.queryItems = query.map { URLQueryItem(name: $0.key, value: $0.value) }
+            // URLQueryItem leaves `+` as is, which the server decodes as a space.
+            components.percentEncodedQuery = components.percentEncodedQuery?
+                .replacingOccurrences(of: "+", with: "%2B")
+            return components.url
+        }
     }
 }
 

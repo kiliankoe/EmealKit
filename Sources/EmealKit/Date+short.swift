@@ -1,21 +1,21 @@
 import Foundation
 
 extension Date {
-    static var dayMonthYearFormatter: DateFormatter = {
+    static let dayMonthYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.y"
         formatter.locale = Locale(identifier: "en_US_POSIX")
         return formatter
     }()
 
-    static var dayMonthYearHourMinute: DateFormatter = {
+    static let dayMonthYearHourMinute: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.y HH:mm"
         formatter.locale = Locale(identifier: "en_US_POSIX")
         return formatter
     }()
 
-    static var yearMonthDayFormatter: DateFormatter = {
+    static let yearMonthDayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "y-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
